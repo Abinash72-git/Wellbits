@@ -21,4 +21,5 @@ class AppConstants {
       GlobalKey<ScaffoldState>();
 
   static const String USERMOBILE = 'user_mobile';
+   static const String APPPAGES = '/app_pages';
 }

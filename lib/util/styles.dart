@@ -2,75 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Styles {
-  static TextStyle textStyleExtraSmall({Color color = Colors.black}) {
+  // Add the responsiveFontSize method within the Styles class
+  static double responsiveFontSize(BuildContext context, double baseFontSize) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    return baseFontSize * (screenWidth / 375); // Adjust 375 to your base screen width
+  }
+
+  static TextStyle textStyleExtraSmall(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w400,
-      fontSize: 10,
+      fontSize: responsiveFontSize(context, 10),
     );
   }
 
-  static TextStyle textStyleSmall({Color color = Colors.black}) {
+  static TextStyle textStyleSmall(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w400,
-      fontSize: 13,
+      fontSize: responsiveFontSize(context, 13),
     );
   }
 
-  static TextStyle textStyleMedium({Color color = Colors.black}) {
+  static TextStyle textStyleMedium(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w500,
-      fontSize: 16,
+      fontSize: responsiveFontSize(context, 16),
     );
   }
 
-  static TextStyle textStyleLarge({Color color = Colors.black}) {
+  static TextStyle textStyleLarge(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w700,
-      fontSize: 18,
+      fontSize: responsiveFontSize(context, 18),
     );
   }
 
-  static TextStyle textStyleExtraLarge({Color color = Colors.black}) {
+  static TextStyle textStyleExtraLarge(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w700,
-      fontSize: 20,
+      fontSize: responsiveFontSize(context, 20),
     );
   }
 
-  static TextStyle textStyleExtraLargeBold({Color color = Colors.black}) {
+  static TextStyle textStyleExtraLargeBold(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
-      fontSize: 22,
+      fontSize: responsiveFontSize(context, 22),
     );
   }
 
-  static TextStyle textStyleHBugeBold({Color color = Colors.black}) {
+  static TextStyle textStyleHBugeBold(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
-      fontSize: 25,
+      fontSize: responsiveFontSize(context, 25),
     );
   }
 
-  static TextStyle textStyleExtraHugeBold({Color color = Colors.black}) {
+  static TextStyle textStyleExtraHugeBold(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
-      fontSize: 30,
+      fontSize: responsiveFontSize(context, 30),
     );
   }
 
-  static TextStyle textStyleanimation({Color color = Colors.black}) {
+  static TextStyle textStyleAnimation(BuildContext context, {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w500,
-      fontSize: 45,
+      fontSize: responsiveFontSize(context, 45),
     );
   }
 }

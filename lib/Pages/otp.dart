@@ -4,7 +4,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wellbits/Pages/intro_slider.dart';
 import 'package:wellbits/Pages/login.dart';
+import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
 import 'package:wellbits/helpers/helper.dart';
 import 'package:wellbits/util/app_constant.dart';
@@ -81,11 +83,13 @@ class _OtpState extends State<Otp> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       key: scaffoldKey,
       body: Container(
-        height: context.height,
-        width: context.width,
+        height: screenHeight,
+        width: screenWidth,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(ConstantImageKey.OtpBg),
@@ -110,7 +114,8 @@ class _OtpState extends State<Otp> {
                           //  textAlign: TextAlign.center,
                           text: TextSpan(
                             text: 'OTP\nVerification',
-                            style: Styles.textStyleanimation(
+                            style: Styles.textStyleAnimation(
+                              context,
                               color: AppColor.mainTextColor,
                             ),
                             children: <TextSpan>[],
@@ -122,24 +127,29 @@ class _OtpState extends State<Otp> {
                   SizedBox(
                     height: height / 30,
                   ),
-                  Row(
+                 Row(
                     children: [
                       Expanded(
-                        child: RichText(
-                          //  textAlign: TextAlign.center,
-                          text: TextSpan(
-                            text: 'Enter the Otp Sent to  ',
-                            style: Styles.textStyleLarge(
-                              color: AppColor.hintTextColor,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: maskMobileNumber(mobile.text),
-                                style: Styles.textStyleLarge(
-                                  color: AppColor.hintTextColor,
-                                ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: 'Enter the Otp Sent to  ',
+                              style: Styles.textStyleLarge(
+                                context,
+                                color: AppColor.hintTextColor,
                               ),
-                            ],
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: maskMobileNumber(mobile.text),
+                                  style: Styles.textStyleLarge(
+                                    context,
+                                    color: AppColor.hintTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -153,8 +163,8 @@ class _OtpState extends State<Otp> {
                     child: Align(
                       // alignment: Alignment.topCenter,
                       child: PinCodeTextField(
-                        pinBoxHeight: 65,
-                        pinBoxWidth: 65,
+                         pinBoxHeight: 50 * (screenWidth / 375), // Responsive pin box height
+                        pinBoxWidth: 50 * (screenWidth / 375), // Responsive pin box width
                         pinBoxRadius: 10,
                         autofocus: true,
                         controller: otp,
@@ -169,11 +179,11 @@ class _OtpState extends State<Otp> {
                         maskCharacter: "*", //😎
                         onTextChanged: (text) {},
                         onDone: (text) async {},
-                        wrapAlignment: WrapAlignment.spaceEvenly,
+                        wrapAlignment: WrapAlignment.spaceAround,
                         pinBoxDecoration:
                             ProvidedPinBoxDecoration.roundedPinBoxDecoration,
                         pinTextStyle: const TextStyle(
-                          fontSize: 35.0,
+                          fontSize: 20.0,
                           color: AppColor.whiteColor,
                         ),
                         pinTextAnimatedSwitcherTransition:
@@ -192,11 +202,9 @@ class _OtpState extends State<Otp> {
                   SizedBox(
                     height: height / 30,
                   ),
-                  GestureDetector(
+                    GestureDetector(
                     onTap: _start == 0
                         ? () {
-                            print(mobile.text);
-                            //   _con.resendOTP(mobile.text);
                             setState(() {
                               _start = 90;
                               startTimer();
@@ -206,31 +214,46 @@ class _OtpState extends State<Otp> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          " Did not get OTP? ",
-                          style: Styles.textStyleMedium(
-                            color: AppColor.hintTextColor,
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              "Did not get OTP? ",
+                              style: Styles.textStyleMedium(
+                                context,
+                                color: AppColor.hintTextColor,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          " Resend Code !",
-                          style: Styles.textStyleMedium(
-                            color: _start == 0
-                                ? AppColor.mainTextColor
-                                : Colors.grey,
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              " Resend Code!",
+                              style: Styles.textStyleMedium(
+                                context,
+                                color: _start == 0
+                                    ? AppColor.mainTextColor
+                                    : Colors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
                         ),
                         if (_start > 0)
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                              '($_start s)',
-                              style: Styles.textStyleMedium(
-                                  color: AppColor.mainTextColor),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                '($_start s)',
+                                style: Styles.textStyleMedium(
+                                  context,
+                                  color: AppColor.mainTextColor,
+                                ),
+                              ),
                             ),
                           ),
                       ],
@@ -242,13 +265,13 @@ class _OtpState extends State<Otp> {
                   MyButton(
                     text: isLoading ? 'Loading...' : "next".toUpperCase(),
                     textcolor: AppColor.whiteColor,
-                    textsize: 23,
+                    textsize:23 * (screenWidth / 375),
                     fontWeight: FontWeight.w600,
                     letterspacing: 0.7,
                     buttoncolor: AppColor.mainTextColor,
                     borderColor: AppColor.mainTextColor,
-                    buttonheight: 65,
-                    buttonwidth: context.width,
+                    buttonheight: 65 * (screenHeight / 812),
+                    buttonwidth: screenWidth,
                     radius: 40,
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
@@ -256,7 +279,8 @@ class _OtpState extends State<Otp> {
                             ? null
                             : Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => Otp()),
+                                MaterialPageRoute(
+                                    builder: (context) => IntroSlider()),
                               );
                       }
                     },

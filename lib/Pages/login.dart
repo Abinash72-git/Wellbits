@@ -93,6 +93,7 @@ class _LoginState extends State<Login> {
                   title: Text(
                     'None of the above',
                     style: Styles.textStyleMedium(
+                      context,
                       color: Colors.blue,
                     ),
                   ),
@@ -114,11 +115,13 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       key: scaffoldKey,
       body: Container(
-        height: context.height,
-        width: context.width,
+        height: screenHeight,
+        width: screenWidth,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(ConstantImageKey.loginBg),
@@ -130,11 +133,11 @@ class _LoginState extends State<Login> {
           child: Form(
             key: formKey,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 350.0,
+                  SizedBox(
+                    height: screenHeight * 0.45,
                   ),
                   Row(
                     children: [
@@ -143,7 +146,8 @@ class _LoginState extends State<Login> {
                           //  textAlign: TextAlign.center,
                           text: TextSpan(
                             text: 'Mobile\nVerification',
-                            style: Styles.textStyleanimation(
+                            style: Styles.textStyleAnimation(
+                              context,
                               color: AppColor.mainTextColor,
                             ),
                             children: <TextSpan>[],
@@ -153,26 +157,30 @@ class _LoginState extends State<Login> {
                     ],
                   ),
                   SizedBox(
-                    height: height / 30,
+                    height: screenHeight * 0.03,
                   ),
                   Row(
                     children: [
                       Expanded(
-                        child: RichText(
-                          //  textAlign: TextAlign.center,
-                          text: TextSpan(
-                            text: 'Please enter your 10 digit mobile number ',
-                            style: Styles.textStyleMedium(
-                              color: AppColor.hintTextColor,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: 'Please enter your 10 digit mobile number ',
+                              style: Styles.textStyleMedium(
+                                context,
+                                color: AppColor.hintTextColor,
+                              ),
+                              children: <TextSpan>[],
                             ),
-                            children: <TextSpan>[],
                           ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: height / 20,
+                    height: screenHeight * 0.04,
                   ),
                   Row(
                     children: [
@@ -202,8 +210,8 @@ class _LoginState extends State<Login> {
                                 hintText: isManualInput
                                     ? 'Enter your mobile number'
                                     : 'Select your number...',
-                                hintStyle: TextStyle(
-                                  fontSize: 16.0,
+                                hintStyle: Styles.textStyleLarge(
+                                  context,
                                   color: AppColor.whiteColor,
                                 ),
                                 filled: true,
@@ -229,6 +237,7 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                               style: Styles.textStyleLarge(
+                                context,
                                 color: AppColor.whiteColor,
                               ),
                             ),
@@ -249,24 +258,22 @@ class _LoginState extends State<Login> {
                     ],
                   ),
                   SizedBox(
-                    height: height / 20,
+                    height: screenHeight * 0.06,
                   ),
                   MyButton(
                     text: isLoading ? 'Loading...' : "next".toUpperCase(),
                     textcolor: AppColor.whiteColor,
-                    textsize: 23,
+                    textsize: 23 * (screenWidth / 375),
                     fontWeight: FontWeight.w600,
                     letterspacing: 0.7,
                     buttoncolor: AppColor.mainTextColor,
                     borderColor: AppColor.mainTextColor,
-                    buttonheight: 65,
-                    buttonwidth: context.width,
+                    buttonheight: 65 * (screenHeight / 812),
+                    buttonwidth: screenWidth,
                     radius: 40,
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
-                        isLoading
-                            ? null
-                            : login();
+                        isLoading ? null : login();
                       }
                     },
                   ),

@@ -73,7 +73,7 @@ class AppColor {
     redColor: Colors.red,
   );
 
-  static const Color yellowColor = Color(0xffFFC107);
+  static const Color yellowColor = Color.fromARGB(255, 248, 186, 0);
   static const Color pinkColor = Color(0xffE91E63);
   static const Color blueColor = Color(0xff2196F3);
   static const Color hintTextColor = Color(0xff686868);

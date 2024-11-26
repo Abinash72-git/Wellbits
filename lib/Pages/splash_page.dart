@@ -22,7 +22,7 @@ class _SplashState extends State<Splash> {
     _getData();
     super.initState();
 
-    Timer(Duration(seconds: 2), () async {
+    Timer(Duration(seconds: 13), () async {
       //WidgetsFlutterBinding.ensureInitialized();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
@@ -50,7 +50,7 @@ class _SplashState extends State<Splash> {
       width: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(ConstantImageKey.SplashImage),
+          image: AssetImage(ConstantImageKey.IntroGif),
           fit: BoxFit.cover,
         ),
       ),

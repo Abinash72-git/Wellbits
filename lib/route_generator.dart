@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wellbits/Pages/app_pages.dart';
 import 'package:wellbits/Pages/intro_page.dart';
 import 'package:wellbits/Pages/login.dart';
+import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/Pages/splash_page.dart';
 import 'package:wellbits/util/extension.dart';
 
@@ -10,7 +12,8 @@ enum AppRouteName {
   introPage('/intro_page'),
   login('/login'),
   homepage('/homepage'),
-
+  appPages('/app_pages'),
+  registerAppPages('/register_app_pages'),
   addGroup('/add_group'),
   addMember('/add_member'),
   addTask('/add_task'),
@@ -67,9 +70,17 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => Login(),
         );
-        case AppRouteName.login:
+        case AppRouteName.introPage:
         return MaterialPageRoute(
           builder: (_) => Intro(),
+        );
+         case AppRouteName.appPages:
+        return MaterialPageRoute(
+          builder: (_) => AppPages(tabNumber: 0,),
+        );
+        case AppRouteName.registerAppPages:
+        return MaterialPageRoute(
+          builder: (_) => RegisterAppPages(tabNumber: 0,),
         );
       // case AppRouteName.homepage:
       //   return MaterialPageRoute(

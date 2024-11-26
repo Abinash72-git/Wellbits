@@ -47,6 +47,21 @@ dependencies:
   device_preview: ^1.2.0
   sms_autofill: ^2.4.0
   pin_code_text_field: ^1.8.0
+  image_picker: ^1.1.2
+  image_cropper: ^8.0.2
+  fluttertoast: ^8.2.8
+  ruler_picker_bn: ^0.0.6
+  flutter_scale_ruler: ^1.0.0
+  toggle_switch: ^2.3.0
+  animated_weight_picker: ^1.0.3
+  animated_notch_bottom_bar: ^1.0.3
+  curved_navigation_bar: ^1.0.6
+  smooth_page_indicator: ^1.2.0+3
+  carousel_slider: ^5.0.0
+  action_slider: ^0.7.0
+  audioplayers: ^6.1.0
+  riff_switch: ^0.0.4
+  
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +89,20 @@ flutter:
   assets:
      - assets/bg/
      - assets/icons/
+     - assets/food/
+     - assets/audio/audio1.wav
+     - assets/audio/audio2.mp3
+     - assets/audio/audio3.mp3
+     - assets/audio/audio4.wav
+     - assets/audio/audio5.mp3
+     - assets/audio/audio6.mp3
+     - assets/audio/audio7.mp3
+     - assets/audio/audio8.mp3
+     - assets/audio/audio9.mp3
+     - assets/audio/audio10.mp3
+     - assets/audio/audio11.mp3
+     - assets/audio/audio13.mp3
+     - assets/audio/audio14.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

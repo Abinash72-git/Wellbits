@@ -27,6 +27,9 @@ class MyButton extends StatelessWidget {
       required this.onTap});
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final responsiveTextSize = textsize * (screenWidth / 375); // Adjust to the base screen width, e.g., 375
+
     // TODO: implement build
     return SizedBox(
       height: buttonheight,
@@ -43,16 +46,18 @@ class MyButton extends StatelessWidget {
           elevation: 0,
         ),
         onPressed: onTap,
-        child: Text(
-          text,
-          // textScaleFactor: 1.0,
-          style: GoogleFonts.dmSans(
+          child: FittedBox(
+          child: Text(
+            text,
+            style: GoogleFonts.dmSans(
               decoration: TextDecoration.none,
-              fontSize: textsize,
+              fontSize: responsiveTextSize,
               fontWeight: fontWeight,
               letterSpacing: letterspacing,
-              color: textcolor),
-          textAlign: TextAlign.center,
+              color: textcolor,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
