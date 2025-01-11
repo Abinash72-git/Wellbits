@@ -5,10 +5,12 @@ class Styles {
   // Add the responsiveFontSize method within the Styles class
   static double responsiveFontSize(BuildContext context, double baseFontSize) {
     final screenWidth = MediaQuery.of(context).size.width;
-    return baseFontSize * (screenWidth / 375); // Adjust 375 to your base screen width
+    return baseFontSize *
+        (screenWidth / 375); // Adjust 375 to your base screen width
   }
 
-  static TextStyle textStyleExtraSmall(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleExtraSmall(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w400,
@@ -16,7 +18,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleSmall(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleSmall(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w400,
@@ -24,7 +27,26 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleMedium(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleSmall1(BuildContext context,
+      {Color color = Colors.black}) {
+    return GoogleFonts.dmSans(
+      color: color,
+      fontWeight: FontWeight.w400,
+      fontSize: responsiveFontSize(context, 14),
+    );
+  }
+
+  static TextStyle textStyleSmall2(BuildContext context,
+      {Color color = Colors.black}) {
+    return GoogleFonts.dmSans(
+      color: color,
+      fontWeight: FontWeight.bold,
+      fontSize: responsiveFontSize(context, 14),
+    );
+  }
+
+  static TextStyle textStyleMedium(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w500,
@@ -32,7 +54,17 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleLarge(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleMedium1(BuildContext context,
+      {Color color = Colors.black}) {
+    return GoogleFonts.dmSans(
+      color: color,
+      fontWeight: FontWeight.w700,
+      fontSize: responsiveFontSize(context, 16),
+    );
+  }
+
+  static TextStyle textStyleLarge(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w700,
@@ -40,7 +72,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleExtraLarge(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleExtraLarge(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w700,
@@ -48,7 +81,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleExtraLargeBold(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleExtraLargeBold(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
@@ -56,7 +90,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleHBugeBold(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleHBugeBold(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
@@ -64,7 +99,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleExtraHugeBold(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleExtraHugeBold(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.bold,
@@ -72,7 +108,8 @@ class Styles {
     );
   }
 
-  static TextStyle textStyleAnimation(BuildContext context, {Color color = Colors.black}) {
+  static TextStyle textStyleAnimation(BuildContext context,
+      {Color color = Colors.black}) {
     return GoogleFonts.dmSans(
       color: color,
       fontWeight: FontWeight.w500,

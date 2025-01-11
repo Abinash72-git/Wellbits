@@ -3,17 +3,23 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellbits/Pages/intro_slider.dart';
 import 'package:wellbits/Pages/login.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
 import 'package:wellbits/helpers/helper.dart';
+import 'package:wellbits/models/base_model.dart';
+import 'package:wellbits/providers/user_provider.dart';
+import 'package:wellbits/route_generator.dart';
 import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
+import 'package:wellbits/util/exception.dart';
 import 'package:wellbits/util/extension.dart';
 import 'package:wellbits/util/styles.dart';
+import 'package:wellbits/widgets/dilogue/dilogue.dart';
 
 class Otp extends StatefulWidget {
   const Otp({super.key});
@@ -37,6 +43,8 @@ class _OtpState extends State<Otp> {
   late Helper hp;
   bool haserror = false;
   bool isLoading = false;
+  UserProvider get provider => context.read<UserProvider>();
+
   void initState() {
     super.initState();
     hp = Helper.of(context);
@@ -45,13 +53,11 @@ class _OtpState extends State<Otp> {
   }
 
   getdata() async {
-    // Retrieve the mobile number from local storage
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? storedMobile = prefs.getString(AppConstants.USERMOBILE);
-    print("storedMobile------------------->$storedMobile");
     setState(() {
-      mobile.text = storedMobile ?? '';
+      mobile.text = prefs.getString(AppConstants.USERMOBILE) ?? '';
     });
+    print(mobile.text);
   }
 
   void startTimer() {
@@ -127,7 +133,7 @@ class _OtpState extends State<Otp> {
                   SizedBox(
                     height: height / 30,
                   ),
-                 Row(
+                  Row(
                     children: [
                       Expanded(
                         child: FittedBox(
@@ -163,8 +169,10 @@ class _OtpState extends State<Otp> {
                     child: Align(
                       // alignment: Alignment.topCenter,
                       child: PinCodeTextField(
-                         pinBoxHeight: 50 * (screenWidth / 375), // Responsive pin box height
-                        pinBoxWidth: 50 * (screenWidth / 375), // Responsive pin box width
+                        pinBoxHeight: 50 *
+                            (screenWidth / 375), // Responsive pin box height
+                        pinBoxWidth: 50 *
+                            (screenWidth / 375), // Responsive pin box width
                         pinBoxRadius: 10,
                         autofocus: true,
                         controller: otp,
@@ -202,7 +210,7 @@ class _OtpState extends State<Otp> {
                   SizedBox(
                     height: height / 30,
                   ),
-                    GestureDetector(
+                  GestureDetector(
                     onTap: _start == 0
                         ? () {
                             setState(() {
@@ -263,28 +271,62 @@ class _OtpState extends State<Otp> {
                     height: height / 20,
                   ),
                   MyButton(
-                    text: isLoading ? 'Loading...' : "next".toUpperCase(),
-                    textcolor: AppColor.whiteColor,
-                    textsize:23 * (screenWidth / 375),
-                    fontWeight: FontWeight.w600,
-                    letterspacing: 0.7,
-                    buttoncolor: AppColor.mainTextColor,
-                    borderColor: AppColor.mainTextColor,
-                    buttonheight: 65 * (screenHeight / 812),
-                    buttonwidth: screenWidth,
-                    radius: 40,
-                    onTap: () async {
-                      if (formKey.currentState!.validate()) {
-                        isLoading
-                            ? null
-                            : Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => IntroSlider()),
-                              );
-                      }
-                    },
-                  ),
+                      text: isLoading ? 'Loading...' : "next".toUpperCase(),
+                      textcolor: AppColor.whiteColor,
+                      textsize: 23 * (screenWidth / 375),
+                      fontWeight: FontWeight.w600,
+                      letterspacing: 0.7,
+                      buttoncolor: AppColor.mainTextColor,
+                      borderColor: AppColor.mainTextColor,
+                      buttonheight: 65 * (screenHeight / 812),
+                      buttonwidth: screenWidth,
+                      radius: 40,
+                      onTap: () async {
+                        if (otp.text.length == 4) {
+                          FocusScope.of(context).unfocus();
+                          try {
+                            await AppDialogue.openLoadingDialogAfterClose(
+                              context,
+                              text: "Loading...",
+                              load: () async {
+                                return await provider.verifyOtpAndLogin(
+                                  mobile: mobile.text,
+                                  otp: otp.text,
+                                );
+                              },
+                              afterComplete: (resp) async {
+                                if (resp.status) {
+                                  print("Success");
+                                  BaseModel baseModel =
+                                      BaseModel.fromMap(resp.fullBody);
+
+                                  if (baseModel.message ==
+                                      "Otp Verified successfully") {
+                                    // Navigate to homepage
+                                    await AppRouteName.appPages
+                                        .pushAndRemoveUntil(
+                                      context,
+                                      (route) => false,
+                                    );
+                                  } else if (baseModel.message ==
+                                      "Not registered") {
+                                    // Navigate to registration page
+                                    await AppRouteName.introSlider
+                                        .push(context);
+                                  } else {
+                                    AppDialogue.toast(
+                                        "Unexpected response: ${baseModel.message}");
+                                  }
+                                }
+                              },
+                            );
+                          } on Exception catch (e) {
+                            ExceptionHandler.showMessage(context, e);
+                          }
+                        } else {
+                          AppDialogue.toast("Please enter a valid 4-digit OTP");
+                        }
+                      }),
                 ],
               ),
             ),

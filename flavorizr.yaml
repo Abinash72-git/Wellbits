@@ -1,0 +1,57 @@
+app:
+  android:
+    flavorDimensions: "flavor-type"
+
+flavors:
+  dev:
+    app:
+      name: "Wellbits Dev"
+    #      icon: "assets/app_icon.png"
+    android:
+      applicationId: "com.tabsquare.wellbits.dev"
+      #icon: "assets/app_icon.png"
+    ios:
+      bundleId: com.tabsquare.wellbits.dev"
+      #icon: "assets/app_icon_white_bg.png"
+      #firebase:
+        #config: "firebase/GoogleService-Info-dev.plist"
+  #      plist:
+  #        NSPhotoLibraryUsageDescription: "We need access to your photo library to save files."
+  #        NSDocumentsFolderUsageDescription: "We need access to your documents folder to save files."
+  #        UISupportsDocumentBrowser: true
+  prod:
+    app:
+      name: "Wellbits"
+    #      icon: "assets/app_icon.png"
+
+    android:
+      applicationId: "com.tabsquare.wellbits"
+      #icon: "assets/app_icon.png"
+    ios:
+      bundleId: "com.tabsquare.wellbits"
+      #icon: "assets/app_icon_white_bg.png"
+      #firebase:
+        #config: "firebase/GoogleService-Info-prod.plist"
+  #      plist:
+  #        NSPhotoLibraryUsageDescription: "We need access to your photo library to save files."
+  #        NSDocumentsFolderUsageDescription: "We need access to your documents folder to save files."
+  #        UISupportsDocumentBrowser: true
+  demo:
+    app:
+      name: "Wellbits Demo"
+    #      icon: "assets/app_icon.png"
+
+    android:
+      applicationId: "com.tabsquare.wellbits.demo"
+      #icon: "assets/app_icon.png"
+    ios:
+      bundleId: "com.tabsquare.wellbits.demo"
+      #icon: "assets/app_icon_white_bg.png"
+      #firebase:
+        #config: "firebase/GoogleService-Info-demo.plist"
+#      plist:
+#        NSPhotoLibraryUsageDescription: "We need access to your photo library to save files."
+#        NSDocumentsFolderUsageDescription: "We need access to your documents folder to save files."
+#        UISupportsDocumentBrowser: true
+ide: idea
+lib/main_demo.dart

@@ -1,16 +1,22 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:wellbits/Pages/otp.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/providers/user_provider.dart';
+import 'package:wellbits/route_generator.dart';
 import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
+import 'package:wellbits/util/dilogs.dart';
+import 'package:wellbits/util/exception.dart';
 import 'package:wellbits/util/extension.dart';
 import 'package:wellbits/util/styles.dart';
 import 'package:wellbits/util/validator.dart';
+import 'package:wellbits/widgets/dilogue/dilogue.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -31,6 +37,8 @@ class _LoginState extends State<Login> {
   bool isChecked = false;
   bool isLoading = false;
   bool isManualInput = false;
+
+  UserProvider get provider => context.read<UserProvider>();
 
   void initState() {
     super.initState();
@@ -273,7 +281,33 @@ class _LoginState extends State<Login> {
                     radius: 40,
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
-                        isLoading ? null : login();
+                        // isLoading ? null : login();
+                        FocusScope.of(context).unfocus();
+                        try {
+                          await AppDialogue.openLoadingDialogAfterClose(
+                            context,
+                            text: "Loading...",
+                            load: () async {
+                              return await provider.sendOTP(
+                                  mobile: mobile.text);
+                            },
+                            afterComplete: (resp) async {
+                              if (resp.status) {
+                                print("sucess");
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setString(
+                                    AppConstants.USERMOBILE, mobile.text);
+                                AppDialogue.toast(resp.data);
+                                AppRouteName.otp.push(
+                                  context,
+                                );
+                              }
+                            },
+                          );
+                        } on Exception catch (e) {
+                          ExceptionHandler.showMessage(context, e);
+                        }
                       }
                     },
                   ),
@@ -286,20 +320,20 @@ class _LoginState extends State<Login> {
     );
   }
 
-  login() async {
-    // setState(() {
-    //   isloading = true;
-    // });
+  // login() async {
+  //   // setState(() {
+  //   //   isloading = true;
+  //   // });
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppConstants.USERMOBILE, mobile.text);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Otp()),
-    );
-    // await _con.mobileSendOTP(mobile.text);
-    // setState(() {
-    //   _con.isloading = false;
-    // });
-  }
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString(AppConstants.USERMOBILE, mobile.text);
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => Otp()),
+  //   );
+  //   // await _con.mobileSendOTP(mobile.text);
+  //   // setState(() {
+  //   //   _con.isloading = false;
+  //   // });
+  // }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle.dart';
 import 'package:wellbits/Pages/RegistrationForms/workstyle.dart';
 import 'package:wellbits/Pages/intro_page.dart';
 import 'package:wellbits/Pages/RegistrationForms/lifestyle_app_pages.dart';
@@ -23,14 +24,21 @@ class _RegisterAppPagesState extends State<RegisterAppPages> {
   late Widget page;
   bool ispageset = false;
 
-  List<bool> selected = [false, false, false, false];
+  List<bool> selected = [false, false, false, false, false];
   List<String> iconPaths = [
     'assets/icons/profile.png',
     'assets/icons/medical.png',
     'assets/icons/life-style2.png',
     'assets/icons/work-type.png',
+    'assets/icons/eatingstyle.png',
   ];
-  List<String> labels = ['Profile', 'Medical', 'Lifestyle', 'Workstyle'];
+  List<String> labels = [
+    'Profile',
+    'Medical',
+    'Lifestyle',
+    'Workstyle',
+    'Eatingstyle'
+  ];
 
   @override
   void initState() {
@@ -59,6 +67,8 @@ class _RegisterAppPagesState extends State<RegisterAppPages> {
         return LifestyleAppPages();
       case 3:
         return Workstyle();
+      case 4:
+        return EatingStyle();
       default:
         return ProfileRegister();
     }
@@ -307,7 +317,7 @@ class CurvePainter extends CustomPainter {
       path.moveTo(0, size.height * 0.35);
       path.quadraticBezierTo(
           size.width * 0.5, size.height * 0.4, size.width, size.height * 0.25);
-      path.lineTo(size.width,0);
+      path.lineTo(size.width, 0);
       path.lineTo(0, 0);
       path.close();
     }

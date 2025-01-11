@@ -104,19 +104,21 @@ class Validator {
     }
   }
 
-  static String? validateAadhar(String? aadharValue) {
-    String patternAadhar = "^[0-9]";
-    RegExp regex = RegExp(patternAadhar);
-    if (aadharValue!.isEmpty) {
-      return "Please Enter Aadhar number";
-    } else if (aadharValue.length > 12 || aadharValue.length < 12) {
-      return 'Enter valid Aadhar number';
-    } else if (!regex.hasMatch(aadharValue)) {
-      return 'Enter valid Aadhar number';
-    } else {
-      return null;
-    }
+  static String? validateAadhar(String? value) {
+  // Regex pattern to ensure 12 digits and does not start with 0 or 1
+  String aadharPattern = r'^[2-9]{1}[0-9]{11}$';
+  RegExp regex = RegExp(aadharPattern);
+
+  if (value == null || value.isEmpty) {
+    return "Please enter your Aadhar number.";
+  } else if (value.length != 12) {
+    return "Aadhar number must be exactly 12 digits.";
+  } else if (!regex.hasMatch(value)) {
+    return "Please enter a valid Aadhar number. It cannot start with 0 or 1.";
+  } else {
+    return null; // Valid Aadhar number
   }
+}
 
   static String? validateifsc(String? value) {
     String ifscPattern = "^[A-Z]{4}0[A-Z0-9]{6}";

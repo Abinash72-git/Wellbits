@@ -26,6 +26,7 @@ class _SplashState extends State<Splash> {
       //WidgetsFlutterBinding.ensureInitialized();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var token = prefs.getString('token');
+      print(token);
       navigate(token);
       // runApp(MaterialApp(home: token == null ? Login() : Homepage()));
     });
@@ -37,11 +38,11 @@ class _SplashState extends State<Splash> {
 
   navigate(token) async {
     if (token == null) {
-      AppRouteName.introPage.push(
+      AppRouteName.login.push(
         context,
       );
     } else {
-      AppRouteName.introPage.pushAndRemoveUntil(context, (route) => false);
+      AppRouteName.login.pushAndRemoveUntil(context, (route) => false);
     }
   }
 

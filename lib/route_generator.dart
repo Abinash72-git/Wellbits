@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wellbits/Pages/app_pages.dart';
+import 'package:wellbits/Pages/booking/booking_confirm_page.dart';
+import 'package:wellbits/Pages/booking/slot_page.dart';
 import 'package:wellbits/Pages/intro_page.dart';
+import 'package:wellbits/Pages/intro_slider.dart';
 import 'package:wellbits/Pages/login.dart';
+import 'package:wellbits/Pages/otp.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/Pages/splash_page.dart';
+import 'package:wellbits/Pages/summary_page.dart';
 import 'package:wellbits/util/extension.dart';
 
 enum AppRouteName {
   splashPage('/splash_page'),
   introPage('/intro_page'),
   login('/login'),
+  otp('/otp'),
+  introSlider('/intro_slider'),
   homepage('/homepage'),
   appPages('/app_pages'),
   registerAppPages('/register_app_pages'),
@@ -23,7 +30,10 @@ enum AppRouteName {
   editGroup('/edit_group'),
   member('/member'),
   notUser('/not_user'),
-  taskPage('/task_page');
+  taskPage('/task_page'),
+  slotPage('/slot_page'),
+  bookingConfirm('/booking_confirm_page'),
+  summarypage('/summary_page');
 
   /// args: TaskViewScreenArgs
 
@@ -70,18 +80,37 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => Login(),
         );
-        case AppRouteName.introPage:
+      case AppRouteName.otp:
+        return MaterialPageRoute(
+          builder: (_) => Otp(),
+        );
+      case AppRouteName.introSlider:
+        return MaterialPageRoute(
+          builder: (_) => IntroSlider(),
+        );
+      case AppRouteName.introPage:
         return MaterialPageRoute(
           builder: (_) => Intro(),
         );
-         case AppRouteName.appPages:
+      case AppRouteName.appPages:
         return MaterialPageRoute(
-          builder: (_) => AppPages(tabNumber: 0,),
+          builder: (_) => AppPages(
+            tabNumber: 0,
+          ),
         );
-        case AppRouteName.registerAppPages:
+      case AppRouteName.registerAppPages:
         return MaterialPageRoute(
-          builder: (_) => RegisterAppPages(tabNumber: 0,),
+          builder: (_) => RegisterAppPages(
+            tabNumber: 0,
+          ),
         );
+      case AppRouteName.slotPage:
+        return MaterialPageRoute(builder: (_) => SlotPage());
+      case AppRouteName.bookingConfirm:
+        return MaterialPageRoute(builder: (_) => BookingConfirmPage());
+      case AppRouteName.summarypage:
+        return MaterialPageRoute(builder: (_) => WellbitsSummaryPage());
+
       // case AppRouteName.homepage:
       //   return MaterialPageRoute(
       //     builder: (_) => MultiProvider(providers: [

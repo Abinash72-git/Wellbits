@@ -247,7 +247,7 @@ class _FoodPageState extends State<FoodPage> {
                         buttonwidth: screenWidth,
                         radius: 40,
                         onTap: () async {
-                          Navigator.push(
+                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ChewTimeFood(
@@ -258,6 +258,7 @@ class _FoodPageState extends State<FoodPage> {
                               ),
                             ),
                           );
+                          
                         },
                       ),
                     ),

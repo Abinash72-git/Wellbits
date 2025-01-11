@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wellbits/config/app_theme.dart';
 
-
 class AppColor {
   static const ColorScheme colorScheme = ColorScheme.light(
     // ignore: deprecated_member_use
@@ -81,7 +80,11 @@ class AppColor {
   static const Color borderColor = Color(0xff000000);
   static const Color blackColor = Color(0xff000000);
   static const Color mainTextColor = Color.fromARGB(255, 2, 46, 121);
-  static const Color fillColor= Color.fromARGB(255, 97, 177, 5);
+  static const Color fillColor = Color.fromARGB(255, 97, 177, 5);
+  static const Color lightblueColor = Color(0xFF10ABFE);
+  static const Color purpleColor = Color(0xFF8D27A2);
+  static const Color mainText2Color = Color(0xFF083C76);
+  static const Color orangeColor = Color(0xFFF23911);
   static const List<List<Color>> upcomingCardGradientColor = [
     [
       Color(0xFF50252B),

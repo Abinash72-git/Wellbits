@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:wellbits/Pages/RegistrationForms/lifestyle_app_pages.dart';
 import 'package:wellbits/Pages/RegistrationForms/medical_app_pages.dart';
 import 'package:wellbits/Pages/RegistrationForms/profile.dart';
+import 'package:wellbits/Pages/booking/bookin_page.dart';
 import 'package:wellbits/Pages/homepage.dart';
 import 'package:wellbits/util/color_constant.dart';
 
@@ -26,7 +27,7 @@ class _AppPagesState extends State<AppPages> {
 
   final List<Widget> _pages = [
     Homepage(),
-    Container(color: Colors.white),
+    BookinPage(),
     Container(color: Colors.white),
   ];
 
@@ -74,49 +75,48 @@ class _AppPagesState extends State<AppPages> {
     );
   }
 
- Widget _buildNavItem(String assetPath, {bool isActive = false}) {
-  return isActive
-      ? Image.asset(
-          assetPath,
-          height: 40, // Active icon size
-          width: 40,
-          color: Colors.white,
-          fit: BoxFit.contain,
-        )
-      : Padding(
-        padding: const EdgeInsets.only(top: 13),
-        child: Align(
-            alignment: Alignment.center,
-            child: Container(
-              height: 50,
-              width: 50,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                //shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(50),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: Offset(0, 3),
+  Widget _buildNavItem(String assetPath, {bool isActive = false}) {
+    return isActive
+        ? Image.asset(
+            assetPath,
+            height: 40, // Active icon size
+            width: 40,
+            color: Colors.white,
+            fit: BoxFit.contain,
+          )
+        : Padding(
+            padding: const EdgeInsets.only(top: 13),
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  //shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(50),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Image.asset(
+                    assetPath,
+                    height: 30, // Inactive icon size
+                    width: 30,
+                    fit: BoxFit.contain,
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Image.asset(
-                  assetPath,
-                  height: 30, // Inactive icon size
-                  width: 30,
-                  fit: BoxFit.contain,
                 ),
               ),
             ),
-          ),
-      );
-}
-
+          );
+  }
 
   Future<bool> onWillPop() async {
     DateTime now = DateTime.now();

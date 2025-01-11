@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:wellbits/Pages/app_pages.dart';
+import 'package:wellbits/route_generator.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/extension.dart';
@@ -546,13 +547,16 @@ class _ChewTimeFoodState extends State<ChewTimeFood> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AppPages(tabNumber: 0),
-                            ),
-                          );
+                          AppRouteName.summarypage.push(context);
                         },
+                        // onPressed: () {
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => AppPages(tabNumber: 0),
+                        //     ),
+                        //   );
+                        // },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           shape: RoundedRectangleBorder(

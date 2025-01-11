@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle.dart';
 import 'package:wellbits/Pages/app_pages.dart';
+import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
@@ -96,12 +98,14 @@ class _WorkstyleState extends State<Workstyle> {
                         text: TextSpan(
                           text: 'Work ',
                           style: Styles.textStyleHBugeBold(context,
-                              color: AppColor.mainTextColor).copyWith(fontSize: screenWidth * 0.09),
+                                  color: AppColor.mainTextColor)
+                              .copyWith(fontSize: screenWidth * 0.09),
                           children: <TextSpan>[
                             TextSpan(
                               text: 'Style',
                               style: Styles.textStyleHBugeBold(context,
-                                  color: AppColor.fillColor).copyWith(fontSize: screenWidth * 0.09),
+                                      color: AppColor.fillColor)
+                                  .copyWith(fontSize: screenWidth * 0.09),
                             ),
                           ],
                         ),
@@ -243,14 +247,22 @@ class _WorkstyleState extends State<Workstyle> {
                 buttonheight: 65 * (screenHeight / 812),
                 buttonwidth: screenWidth,
                 radius: 40,
+                // onTap: () async {
+                //   //validateAndContinue();
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => AppPages(tabNumber: 0),
+                //     ),
+                //   );
+                // },
                 onTap: () async {
-                  //validateAndContinue();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AppPages(tabNumber: 0),
-                    ),
-                  );
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegisterAppPages(
+                                tabNumber: 4,
+                              )));
                 },
               ),
               SizedBox(
@@ -274,7 +286,7 @@ class _WorkstyleState extends State<Workstyle> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Container(
-     padding: EdgeInsets.symmetric(
+      padding: EdgeInsets.symmetric(
         horizontal: screenWidth * 0.04,
         vertical: screenHeight * 0.01,
       ),

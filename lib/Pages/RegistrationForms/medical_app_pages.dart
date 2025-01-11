@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:ruler_picker_bn/ruler_picker_bn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -11,11 +12,16 @@ import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/Pages/RegistrationForms/sugar_level.dart';
 import 'package:wellbits/Pages/RegistrationForms/weight.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/providers/user_provider.dart';
+import 'package:wellbits/route_generator.dart';
+import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/dilogs.dart';
+import 'package:wellbits/util/exception.dart';
 import 'package:wellbits/util/extension.dart';
 import 'package:wellbits/util/styles.dart';
+import 'package:wellbits/widgets/dilogue/dilogue.dart';
 
 class MedicalRegister extends StatefulWidget {
   const MedicalRegister({super.key});
@@ -56,10 +62,8 @@ class _MedicalRegisterState extends State<MedicalRegister> {
   double hdlLevel = 120.0;
 
   int totalScore = 0;
-  int heightWeightScore = 0;
-  int sugarScore = 0;
-  int pressureScore = 0;
-  int cholesterolScore = 0;
+
+  UserProvider get provider => context.read<UserProvider>();
 
   Widget buildStepContent() {
     switch (currentStep) {
@@ -120,7 +124,7 @@ class _MedicalRegisterState extends State<MedicalRegister> {
   }
 
   // Method to proceed to the next step
-  void nextStep() {
+  void nextStep() async {
     if (currentStep == 1 && (!isHeightSelected || selectedHeight <= 0)) {
       Dialogs.snackbar("Please select your height before proceeding.", context);
       return;
@@ -129,7 +133,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
       Dialogs.snackbar("Please select your weight before proceeding.", context);
       return;
     }
-
     if (currentStep == 3 &&
         (!isPressureSelected ||
             systolicLevel <= 0 ||
@@ -139,7 +142,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
           "Please select your pressure and cholesterol levels.", context);
       return;
     }
-
     if (currentStep == 4 &&
         (!isSugarLevelSelected ||
             prePrandialLevel <= 0 ||
@@ -148,7 +150,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
           "Please select your sugar levels before proceeding.", context);
       return;
     }
-
     if (currentStep == 5 &&
         (!isCholesterolSelected ||
             triglyceridesLevel <= 0 ||
@@ -159,64 +160,70 @@ class _MedicalRegisterState extends State<MedicalRegister> {
           context);
       return;
     }
-    if (currentStep == 1 || currentStep == 2) {
-      heightWeightScore =
-          calculateHeightWeightScore(selectedHeight, selectedWeight);
-    }
-    if (currentStep == 3) {
-      pressureScore = calculatePressureScore(systolicLevel, diastolicLevel);
-    }
-    if (currentStep == 4) {
-      sugarScore = calculateSugarScore(prePrandialLevel, postPrandialLevel);
-    }
+
     if (currentStep == 5) {
-      cholesterolScore =
-          calculateCholesterolScore(triglyceridesLevel, ldlLevel, hdlLevel);
-    }
+      FocusScope.of(context).unfocus(); // Close the keyboard
+      setState(() {
+        isLoading = true;
+      });
 
-    // Update the total score
-    totalScore =
-        heightWeightScore + pressureScore + sugarScore + cholesterolScore;
+      // try {
+      //   await AppDialogue.openLoadingDialogAfterClose(
+      //     context,
+      //     text: "Saving Medical Profile...",
+      //     load: () async {
+      //       final SharedPreferences prefs =
+      //           await SharedPreferences.getInstance();
+      //       final String? token = prefs.getString(AppConstants.token);
 
-    // Save the total score locally for the next page
-    saveTotalScore(totalScore);
-    // if (currentStep == 1) {
-    //   String unit = isCMSelected ? "cm" : "ft";
-    //   print("Selected Height: ${selectedHeight.toStringAsFixed(1)} $unit");
-    // }
-    // if (currentStep == 2) {
-    //   print("Selected Weight: ${selectedWeight.toStringAsFixed(1)} kg");
-    // }
-    // if (currentStep == 3) {
-    //   print("Systolic Level: $systolicLevel");
-    //   print("Diastolic Level: $diastolicLevel");
-    //   print("Cholesterol Level: $cholesterolLevel");
-    // }
-    // if (currentStep == 4) {
-    //   print("Pre-prandial Level: $prePrandialLevel");
-    //   print("Post-prandial Level: $postPrandialLevel");
-    // }
-    // if (currentStep == 5) {
-    //   print("Triglycerides Level: $triglyceridesLevel");
-    //   print("LDL Level: $ldlLevel");
-    //   print("HDL Level: $hdlLevel");
-    // }
+      //       if (token == null) {
+      //         throw Exception("User token not found. Please log in again.");
+      //       }
 
-    setState(() {
-      if (currentStep < 5) {
+      //       // Call createMedicalProfile
+      //       return await provider.createMedicalProfile(
+      //         token: token,
+      //         height: selectedHeight,
+      //         weight: selectedWeight,
+      //         pressureSystolic: systolicLevel,
+      //         pressureDiastolic: diastolicLevel,
+      //         triglycerides: triglyceridesLevel,
+      //         ldl: ldlLevel,
+      //         hdl: hdlLevel,
+      //         sugarPre: prePrandialLevel,
+      //         sugarPost: postPrandialLevel,
+      //       );
+      //     },
+      //     afterComplete: (resp) async {
+      //       if (resp.status) {
+      //         AppDialogue.toast("Medical profile created successfully!");
+      //         Navigator.pushReplacement(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => RegisterAppPages(tabNumber: 2),
+      //           ),
+      //         );
+      //       } else {
+      //         AppDialogue.toast("Failed to save medical profile!");
+      //       }
+      //     },
+      //   );
+      // } catch (e) {
+      //   ExceptionHandler.showMessage(context, e);
+      // } finally {
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      // }
+    } else {
+      setState(() {
         currentStep++;
-      } else {
-        // Navigate to the new page after the last step is completed
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RegisterAppPages(
-              tabNumber: 2,
-            ),
-          ),
-        );
-      }
-    });
+      });
+    }
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => RegisterAppPages(tabNumber: 2)));
   }
 
   // Method to go back to the previous step
@@ -224,53 +231,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
     setState(() {
       if (currentStep > 1) currentStep--;
     });
-  }
-
-  int calculateHeightWeightScore(double height, double weight) {
-    double bmi = weight / ((height / 100) * (height / 100));
-    if (bmi >= 18.5 && bmi <= 24.9) {
-      return 0; // Healthy range
-    } else if (bmi < 18.5 || bmi > 30) {
-      return 20; // Unhealthy range
-    } else {
-      return 10; // Slightly unhealthy
-    }
-  }
-
-  int calculatePressureScore(double systolic, double diastolic) {
-    if (systolic < 120 && diastolic < 80) {
-      return 0; // Normal pressure
-    } else if ((systolic >= 120 && systolic <= 139) ||
-        (diastolic >= 80 && diastolic <= 89)) {
-      return 10; // Elevated pressure
-    } else {
-      return 20; // High pressure
-    }
-  }
-
-  int calculateSugarScore(double prePrandial, double postPrandial) {
-    if (prePrandial < 100 && postPrandial < 140) {
-      return 0; // Normal sugar
-    } else if (prePrandial < 126 && postPrandial < 200) {
-      return 10; // Prediabetes
-    } else {
-      return 20; // Diabetes
-    }
-  }
-
-  int calculateCholesterolScore(double triglycerides, double ldl, double hdl) {
-    if (triglycerides < 150 && ldl < 100 && hdl > 40) {
-      return 0; // Healthy cholesterol
-    } else if (triglycerides < 200 && ldl < 130 && hdl >= 40) {
-      return 10; // Slightly unhealthy
-    } else {
-      return 20; // Unhealthy
-    }
-  }
-
-  void saveTotalScore(int score) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('totalScore', score);
   }
 
   void goToStep(int step) {
@@ -356,7 +316,7 @@ class _MedicalRegisterState extends State<MedicalRegister> {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: RichText(
-                         // textAlign: TextAlign.center, // Center-align the text
+                          // textAlign: TextAlign.center, // Center-align the text
                           text: TextSpan(
                             text: 'Medi',
                             style: Styles.textStyleHBugeBold(context,
@@ -501,10 +461,8 @@ class _MedicalRegisterState extends State<MedicalRegister> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
                 buildStepContent(),
-
                 const SizedBox(
                   height: 20,
                 ),
@@ -522,21 +480,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
                   onTap: nextStep,
                 ),
                 const SizedBox(height: 30),
-                // if (currentStep > 1)
-                //   MyButton(
-                //     text: "BACK",
-                //     textcolor: AppColor.whiteColor,
-                //     textsize: 23,
-                //     fontWeight: FontWeight.w600,
-                //     letterspacing: 0.7,
-                //     buttoncolor: Colors.grey,
-                //     borderColor: Colors.grey,
-                //     buttonheight: 60,
-                //     buttonwidth: context.width,
-                //     radius: 40,
-                //     onTap: previousStep,
-                //   ),
-                // const SizedBox(height: 40),
               ],
             ),
           ),

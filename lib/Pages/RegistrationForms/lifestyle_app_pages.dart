@@ -6,6 +6,7 @@ import 'package:wellbits/Pages/RegistrationForms/lifestyle.dart';
 import 'package:wellbits/Pages/RegistrationForms/lifestyle_smoking.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/dilogs.dart';
 import 'package:wellbits/util/extension.dart';
@@ -46,44 +47,16 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
   @override
   void initState() {
     super.initState();
-    _loadTotalScore(); // Load initial total score from SharedPreferences
+    // Load initial total score from SharedPreferences
+    getdata();
   }
 
-  Future<void> _loadTotalScore() async {
+  getdata() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      totalScore = prefs.getInt('totalScore') ?? 0;
+      // Provide a default value of 0 if the key doesn't exist
+      totalScore = prefs.getInt(AppConstants.TotalScore) ?? 0;
     });
-  }
-
-  Future<void> _saveTotalScore(int score) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('totalScore', score);
-  }
-
-  void calculateLifestyleScore() {
-    int activityScore = 0;
-    int smokingDrinkingScore = 0;
-
-    // Calculate activity score
-    if (isWalking == true) activityScore += 4;
-    if (isWorkout == true) activityScore += 4;
-    if (isCycling == true) activityScore += 4;
-    if (isSwimming == true) activityScore += 4;
-    if (isSports == true) activityScore += 4;
-
-    // Deduct points if smoking or drinking
-    if (isSmoking == true) smokingDrinkingScore += 10;
-    if (isDrinking == true) smokingDrinkingScore += 10;
-
-    lifestyleScore = activityScore - smokingDrinkingScore;
-    lifestyleScore =
-        lifestyleScore.clamp(0, 20); // Ensure it stays between 0 and 20
-
-    // Update the total score
-    totalScore += lifestyleScore;
-
-    _saveTotalScore(totalScore); // Save the updated total score
   }
 
   bool areSmokingAndDrinkingAnswered() {
@@ -157,27 +130,27 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
       return;
     }
     if (currentStep == 1) {
-    print("Walking: $isWalking");
-    print("Workout: $isWorkout");
-    print("Cycling: $isCycling");
-    print("Swimming: $isSwimming");
-    print("Sports: $isSports");
+      print("Walking: $isWalking");
+      print("Workout: $isWorkout");
+      print("Cycling: $isCycling");
+      print("Swimming: $isSwimming");
+      print("Sports: $isSports");
 
-    // Calculate and display the score for Step 1
-    calculateLifestyleScore();
-    // Dialogs.snackbar(
-    //     "Step 1 complete. Your current score: $lifestyleScore", context);
-  }
+      // Calculate and display the score for Step 1
 
-  // Handle Step 2: Smoking and Drinking
-  if (currentStep == 2) {
-    print("Smoking: $isSmoking");
-    print("Drinking: $isDrinking");
+      // Dialogs.snackbar(
+      //     "Step 1 complete. Your current score: $lifestyleScore", context);
+    }
 
-    // Update the score for Step 2
-    calculateLifestyleScore();
-    // Dialogs.snackbar("Step 2 complete. Total score: $totalScore", context);
-  }
+    // Handle Step 2: Smoking and Drinking
+    if (currentStep == 2) {
+      print("Smoking: $isSmoking");
+      print("Drinking: $isDrinking");
+
+      // Update the score for Step 2
+
+      // Dialogs.snackbar("Step 2 complete. Total score: $totalScore", context);
+    }
 
     setState(() {
       if (currentStep < 2) {
@@ -296,7 +269,7 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
                             ),
                           ],
                         ),
-                          child: FittedBox(
+                        child: FittedBox(
                           fit: BoxFit.scaleDown,
                           child: Text(
                             '$totalScore%',

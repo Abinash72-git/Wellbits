@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wellbits/models/api_validation_model.dart';
 
 class AppConstants {
   static const String appName = 'Wellbits';
@@ -20,6 +21,12 @@ class AppConstants {
   static final GlobalKey<ScaffoldState> scaffoldKey =
       GlobalKey<ScaffoldState>();
 
+  static late ApiValidationModel apiValidationModel;
+
+  static const String token = 'token';
   static const String USERMOBILE = 'user_mobile';
-   static const String APPPAGES = '/app_pages';
+  static const String TotalScore = 'total_score';
+
+
+  static const String APPPAGES = '/app_pages';
 }

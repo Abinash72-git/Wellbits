@@ -6,4 +6,5 @@ class ConstantImageKey {
   static const String RegisterBg = 'assets/bg/bg.png';
   static const String HomeBg = 'assets/bg/home bg.png';
   static const String IntroGif = 'assets/bg/intro_gif.gif';
+  static const String noInternet = 'assets/icons/sports.png';
 }

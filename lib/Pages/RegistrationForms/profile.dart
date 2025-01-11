@@ -5,15 +5,22 @@ import 'dart:io' as Io;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellbits/Pages/intro_page.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/helpers/helper.dart';
+import 'package:wellbits/providers/user_provider.dart';
+import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/dilogs.dart';
+import 'package:wellbits/util/exception.dart';
 import 'package:wellbits/util/extension.dart';
 import 'package:wellbits/util/styles.dart';
 import 'package:wellbits/util/validator.dart';
+import 'package:wellbits/widgets/dilogue/dilogue.dart';
 
 class ProfileRegister extends StatefulWidget {
   const ProfileRegister({super.key});
@@ -28,6 +35,7 @@ class _ProfileRegisterState extends State<ProfileRegister> {
   double get height => size.height;
   double get width => size.width;
   double get radius => sqrt(pow(width, 2) + pow(height, 2));
+  late Helper hp;
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isMaleSelected = true;
@@ -37,7 +45,25 @@ class _ProfileRegisterState extends State<ProfileRegister> {
   TextEditingController name = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  TextEditingController mobile = TextEditingController();
+
   bool isLoading = false;
+
+  UserProvider get provider => context.read<UserProvider>();
+
+  void initState() {
+    super.initState();
+    hp = Helper.of(context);
+    getdata();
+  }
+
+  Future<void> getdata() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      mobile.text = prefs.getString(AppConstants.USERMOBILE) ?? '';
+    });
+    print(mobile.text);
+  }
 
   void dispose() {
     // Dispose of the controller when not needed
@@ -51,10 +77,7 @@ class _ProfileRegisterState extends State<ProfileRegister> {
     return name.text.isNotEmpty &&
         location.text.isNotEmpty &&
         dateController.text.isNotEmpty &&
-        localprofilepic !=
-            null && // Ensure the user has selected a profile picture
-        (isMaleSelected !=
-            null); // Check if gender is selected (already being checked)
+        (isMaleSelected != null); // Gender must still be selected
   }
 
   void validateAndContinue() {
@@ -119,7 +142,7 @@ class _ProfileRegisterState extends State<ProfileRegister> {
                     height: 60.0,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center, 
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // 'Score' text
                       Expanded(
@@ -276,7 +299,69 @@ class _ProfileRegisterState extends State<ProfileRegister> {
                   SizedBox(
                     height: height / 30,
                   ),
+                  TextFormField(
+                    readOnly: true,
+                    controller: mobile,
+                    // validator: Validator.notEmpty,
+                    style: Styles.textStyleMedium(
+                      context,
+                      color: AppColor.blackColor,
+                    ),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                        color: AppColor.mainTextColor,
+                        size: 25,
+                      ),
+                      hintText: 'Enter your Number',
+                      hintStyle: Styles.textStyleMedium(
+                        context,
+                        color: AppColor.hintTextColor,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Colors.grey, // Always grey border color
+                          width: .5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .grey, // Always grey border color when enabled
+                          width: .5,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Colors.grey, // Grey border when focused
+                          width: .5,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color:
+                              Colors.grey, // Grey border when there's an error
+                          width: .5,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide(
+                          color: Colors
+                              .grey, // Grey border when focused and there's an error
+                          width: .5,
+                        ),
+                      ),
+                    ),
+                  ),
 
+                  SizedBox(
+                    height: height / 30,
+                  ),
                   // Date of Birth Field
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -530,6 +615,49 @@ class _ProfileRegisterState extends State<ProfileRegister> {
                     buttonheight: 65 * (screenHeight / 812),
                     buttonwidth: screenWidth,
                     radius: 40,
+                    // onTap: () async {
+                    //   if (formKey.currentState!.validate() &&
+                    //       areAllFieldsFilled()) {
+                    //     FocusScope.of(context).unfocus();
+                    //     try {
+                    //       await AppDialogue.openLoadingDialogAfterClose(
+                    //         context,
+                    //         text: "Creating Profile...",
+                    //         load: () async {
+                    //           String gender =
+                    //               isMaleSelected ? "male" : "female";
+                    //           return await provider.createProfile(
+                    //             userName: name.text,
+                    //             dob: dateController.text,
+                    //             location: location.text,
+                    //             phone: mobile.text,
+                    //             gender: gender,
+                    //             userImage: localprofilepic,
+                    //           );
+                    //         },
+                    //         afterComplete: (resp) async {
+                    //           if (resp.status) {
+                    //             print("Profile created successfully!");
+                    //             Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                 builder: (context) =>
+                    //                     RegisterAppPages(tabNumber: 1),
+                    //               ),
+                    //             );
+                    //           } else {
+                    //             AppDialogue.toast(
+                    //                 "Failed to create profile. Please try again!");
+                    //           }
+                    //         },
+                    //       );
+                    //     } on Exception catch (e) {
+                    //       ExceptionHandler.showMessage(context, e);
+                    //     }
+                    //   } else {
+                    //     AppDialogue.toast("Please fill all fields!");
+                    //   }
+                    // },
                     onTap: () async {
                       //validateAndContinue();
                       Navigator.push(
