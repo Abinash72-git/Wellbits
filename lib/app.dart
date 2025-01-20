@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
                         theme: AppThemes(ThemeMode.light).theme,
                         darkTheme: AppThemes(ThemeMode.dark).theme,
                         themeMode: ThemeMode.light,
-                        home: Splash()),
+                        home: RegisterAppPages(tabNumber: 0,)),
                   );
                 }),
           );

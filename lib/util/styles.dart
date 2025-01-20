@@ -90,6 +90,15 @@ class Styles {
     );
   }
 
+  static TextStyle textStyleExtraLargeBold2(BuildContext context,
+      {Color color = Colors.black}) {
+    return GoogleFonts.dmSans(
+      color: color,
+      fontWeight: FontWeight.bold,
+      fontSize: responsiveFontSize(context, 24),
+    );
+  }
+
   static TextStyle textStyleHBugeBold(BuildContext context,
       {Color color = Colors.black}) {
     return GoogleFonts.dmSans(

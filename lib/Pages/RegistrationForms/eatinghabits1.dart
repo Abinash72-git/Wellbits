@@ -25,8 +25,7 @@ class _Eatinghabits1State extends State<Eatinghabits1> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+   
     return Scaffold(
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -42,7 +41,7 @@ class _Eatinghabits1State extends State<Eatinghabits1> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildCustomWidget(
-                title: "Number Of Meals",
+                title: "Number Of Meals In Per Day",
                 imagePath: "assets/icons/mealtime.png",
                 inputValue: 4,
                 initialSelectedValue: _selectedMealsValue,
@@ -53,7 +52,7 @@ class _Eatinghabits1State extends State<Eatinghabits1> {
                 },
               ),
               buildCustomWidget(
-                  title: "Water Intake in Liter",
+                  title: "Water Intake In per Day(Litres)",
                   imagePath: 'assets/icons/waterbottle.png',
                   inputValue: 4,
                   initialSelectedValue: _selectedWaterValue,
