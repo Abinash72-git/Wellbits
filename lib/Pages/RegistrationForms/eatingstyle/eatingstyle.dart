@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatinghabits1.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatinghabits2.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatinghabits3.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatinghabits4.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatinghabits5.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatinghabits1.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatinghabits2.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatinghabits3.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatinghabits4.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatinghabits5.dart';
 import 'package:wellbits/components/button.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';

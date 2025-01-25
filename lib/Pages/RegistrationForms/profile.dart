@@ -615,58 +615,60 @@ class _ProfileRegisterState extends State<ProfileRegister> {
                     buttonheight: 65 * (screenHeight / 812),
                     buttonwidth: screenWidth,
                     radius: 40,
-                    // onTap: () async {
-                    //   if (formKey.currentState!.validate() &&
-                    //       areAllFieldsFilled()) {
-                    //     FocusScope.of(context).unfocus();
-                    //     try {
-                    //       await AppDialogue.openLoadingDialogAfterClose(
-                    //         context,
-                    //         text: "Creating Profile...",
-                    //         load: () async {
-                    //           String gender =
-                    //               isMaleSelected ? "male" : "female";
-                    //           return await provider.createProfile(
-                    //             userName: name.text,
-                    //             dob: dateController.text,
-                    //             location: location.text,
-                    //             phone: mobile.text,
-                    //             gender: gender,
-                    //             userImage: localprofilepic,
-                    //           );
-                    //         },
-                    //         afterComplete: (resp) async {
-                    //           if (resp.status) {
-                    //             print("Profile created successfully!");
-                    //             Navigator.push(
-                    //               context,
-                    //               MaterialPageRoute(
-                    //                 builder: (context) =>
-                    //                     RegisterAppPages(tabNumber: 1),
-                    //               ),
-                    //             );
-                    //           } else {
-                    //             AppDialogue.toast(
-                    //                 "Failed to create profile. Please try again!");
-                    //           }
-                    //         },
-                    //       );
-                    //     } on Exception catch (e) {
-                    //       ExceptionHandler.showMessage(context, e);
-                    //     }
-                    //   } else {
-                    //     AppDialogue.toast("Please fill all fields!");
-                    //   }
-                    // },
                     onTap: () async {
-                      //validateAndContinue();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterAppPages(tabNumber: 1),
-                        ),
-                      );
+                      print(
+                          "---------------Profile Button Clicked------------");
+                      if (formKey.currentState!.validate() &&
+                          areAllFieldsFilled()) {
+                        FocusScope.of(context).unfocus();
+                        try {
+                          await AppDialogue.openLoadingDialogAfterClose(
+                            context,
+                            text: "Creating Profile...",
+                            load: () async {
+                              String gender =
+                                  isMaleSelected ? "male" : "female";
+                              return await provider.createProfile(
+                                userName: name.text,
+                                dob: dateController.text,
+                                location: location.text,
+                                phone: mobile.text,
+                                gender: gender,
+                                userImage: localprofilepic,
+                              );
+                            },
+                            afterComplete: (resp) async {
+                              if (resp.status) {
+                                print("Profile created successfully!");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        RegisterAppPages(tabNumber: 1),
+                                  ),
+                                );
+                              } else {
+                                AppDialogue.toast(
+                                    "Failed to create profile. Please try again!");
+                              }
+                            },
+                          );
+                        } on Exception catch (e) {
+                          ExceptionHandler.showMessage(context, e);
+                        }
+                      } else {
+                        AppDialogue.toast("Please fill all fields!");
+                      }
                     },
+                    // onTap: () async {
+                    //   //validateAndContinue();
+                    //   Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => RegisterAppPages(tabNumber: 1),
+                    //     ),
+                    //   );
+                    // },
                   ),
                   SizedBox(
                     height: height / 20,

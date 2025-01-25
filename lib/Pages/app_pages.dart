@@ -4,8 +4,8 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:wellbits/Pages/RegistrationForms/lifestyle_app_pages.dart';
-import 'package:wellbits/Pages/RegistrationForms/medical_app_pages.dart';
+import 'package:wellbits/Pages/RegistrationForms/lifestyle/lifestyle_app_pages.dart';
+import 'package:wellbits/Pages/RegistrationForms/medicalstyle/medical_app_pages.dart';
 import 'package:wellbits/Pages/RegistrationForms/profile.dart';
 import 'package:wellbits/Pages/booking/bookin_page.dart';
 import 'package:wellbits/Pages/homepage.dart';

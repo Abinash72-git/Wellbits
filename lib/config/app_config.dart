@@ -6,13 +6,13 @@ class AppConfig {
   String get baseUrl {
     switch (F.appFlavor) {
       case null:
-        return 'https://tabsquareinfotech.com/App/Abinesh_be_work/tsit_farms/public/api/';
+        return 'https://tsitfilemanager.in/vignesh/wellbits/public/api/';
       case Flavor.dev:
-        return 'https://tabsquareinfotech.com/App/Abinesh_be_work/tsit_farms/public/api/';
+        return 'https://tsitfilemanager.in/vignesh/wellbits/public/api/';
       case Flavor.prod:
-        return 'https://tabsquareinfotech.com/App/Abinesh_be_work/tsit_farms/public/api/';
+        return 'https://tsitfilemanager.in/vignesh/wellbits/public/api/';
       case Flavor.demo:
-        return 'https://tabsquareinfotech.com/App/Abinesh_be_work/tsit_farms/public/api/';
+        return 'https://tsitfilemanager.in/vignesh/wellbits/public/api/';
     }
   }
 }

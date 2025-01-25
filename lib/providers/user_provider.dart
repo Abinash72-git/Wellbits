@@ -4,12 +4,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart' as dio;
+import 'dart:core';
 
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellbits/enums/enum.dart';
 import 'package:wellbits/models/api_validation_model.dart';
+import 'package:wellbits/models/lifestyle_model.dart';
 import 'package:wellbits/models/login_model.dart';
 import 'package:wellbits/models/medical_res_model.dart';
 import 'package:wellbits/models/profile_model.dart';
@@ -111,22 +113,22 @@ class UserProvider extends ChangeNotifier {
 
   Future<APIResp> createProfile({
     required String userName,
-    required String dob, // Still required, but format it correctly
+    required String dob,
     required String location,
     required String phone,
     required String gender,
     File? userImage,
   }) async {
-    // Format the date to "d-m-Y" format
-    final formattedDob =
-        DateFormat('dd-MM-yyyy').format(DateFormat('dd/MM/yyyy').parse(dob));
+    print("-----------------Create profile Entry---------------");
+    final formattedDob = DateFormat('yyyy-MM-dd').format(
+      DateFormat('dd/MM/yyyy').parse(dob),
+    );
 
-    // Prepare form data
     final formData = dio.FormData.fromMap({
       "user_name": userName,
-      "dob": formattedDob, // Ensure correct format
+      "dateofbirth": formattedDob,
       "location": location,
-      "phone": phone,
+      "mobile_no": phone,
       "gender": gender,
       if (userImage != null)
         "user_image": await dio.MultipartFile.fromFile(
@@ -167,7 +169,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<APIResp> createMedicalProfile({
-    required String token,
+    required String? token,
     required double height,
     required double weight,
     required double pressureSystolic,
@@ -178,7 +180,14 @@ class UserProvider extends ChangeNotifier {
     required double sugarPre,
     required double sugarPost,
   }) async {
-    // Prepare data for the request
+    print("Token from SharedPreferences: $token");
+    // Log the token for debugging
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // String? savedToken = prefs.getString(AppConstants.token);
+    // print("Token from SharedPreferences: $savedToken");
+    // print("Token used in createMedicalProfile: $token");
+
+    // Prepare the data payload for the request
     final Map<String, dynamic> data = {
       "height": height,
       "weight": weight,
@@ -190,38 +199,157 @@ class UserProvider extends ChangeNotifier {
       "sugar_pre": sugarPre,
       "sugar_post": sugarPost,
     };
-    final url = '${UrlPath.loginUrl.createMedicalProfile}/$token';
 
-    // Make the POST request
-    final resp = await APIService.post(
-      url,
-      data: data,
-      showNoInternet: false,
-      auth: true,
-      forceLogout: false,
-      console: true,
-      timeout: const Duration(seconds: 30),
-    );
+    final String url = '${UrlPath.loginUrl.createMedicalProfile}/$token';
+    print("API URL: $url");
 
-    print(resp.statusCode);
-    print(resp.status);
+    try {
+      // Make the POST request
+      final APIResp response = await APIService.post(
+        url,
+        data: data,
+        showNoInternet: true, // Enable better handling for no internet
+        auth: true,
+        forceLogout: false,
+        console: true,
+        timeout: const Duration(seconds: 30),
+      );
 
-    if (resp.status) {
-      // Parse the response
-      MedicalProfileResponse profile =
-          MedicalProfileResponse.fromMap(resp.fullBody);
+      if (response.status) {
+        // Parse and handle the success response
+        MedicalProfileResponse profile =
+            MedicalProfileResponse.fromMap(response.fullBody);
 
-      // Save total score locally
-      if (profile.totalScore != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setInt(AppConstants.TotalScore, profile.totalScore!);
+        // Save the total score locally if available
+        if (profile.totalScore != null) {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setInt(AppConstants.TotalScore, profile.totalScore!);
+        }
+
+        return response;
+      } else {
+        // Map the errors to user-friendly messages based on the status code
+        switch (response.statusCode) {
+          case 404:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "User not found or token is invalid.",
+            );
+          case 409:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "Medical profile already exists for this user.",
+            );
+          case 422:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "Validation error: ${response.data?.toString()}",
+            );
+          case 500:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "Internal server error. Please try again later.",
+            );
+          default:
+            throw APIException(
+              type: APIErrorType.toast,
+              message:
+                  response.data?.toString() ?? "An unknown error occurred.",
+            );
+        }
       }
-
-      return resp;
-    } else {
+    } catch (e) {
+      // Handle unexpected exceptions
       throw APIException(
         type: APIErrorType.toast,
-        message: resp.data?.toString() ?? "Failed to create medical profile!",
+        message: "An unexpected error occurred: ${e.toString()}",
+      );
+    }
+  }
+
+  Future<APIResp> createLifestyleProfile({
+     required String? token, // Explicitly pass the token
+    required String walking,
+    required String workout,
+    required String cycling,
+    required String swimming,
+    required String sports,
+    required String smoking,
+    required String drinking,
+  }) async {
+    print("-----------------Create Lifestyle Profile Entry---------------");
+
+   
+    final Map<String, dynamic> data = {
+       "walking": walking,
+      "workout": workout,
+      "cycling": cycling,
+      "swimming": swimming,
+      "sports": sports,
+      "smoking": smoking,
+      "drinking": drinking,
+    };
+
+    final String url = '${UrlPath.loginUrl.creteLifeStyleProfile}/$token';
+    print("API URL: $url");
+    try {
+      final resp = await APIService.post(
+        url,
+        data: data,
+        showNoInternet: false,
+        auth: true, // Ensure token is sent in the request headers
+        forceLogout: false,
+        console: true,
+        timeout: const Duration(seconds: 30),
+      );
+
+      print("Response Status Code: ${resp.statusCode}");
+      print("Response Status: ${resp.status}");
+
+      if (resp.status) {
+        // Parse the response body using LifestyleModel
+        LifestyleModel lifestyle = LifestyleModel.fromMap(resp.fullBody);
+
+        print("Lifestyle profile created successfully: ${lifestyle.message}");
+        print("Lifestyle score: ${lifestyle.lifestyleScore}");
+
+        return resp;
+      } else {
+       // Map the errors to user-friendly messages based on the status code
+        switch (resp.statusCode) {
+          case 404:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "User not found or token is invalid.",
+            );
+          case 409:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "LifeStyle profile already exists for this user.",
+            );
+          case 422:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "Validation error: ${resp.data?.toString()}",
+            );
+          case 500:
+            throw APIException(
+              type: APIErrorType.toast,
+              message: "Internal server error. Please try again later.",
+            );
+          default:
+            throw APIException(
+              type: APIErrorType.toast,
+              message:
+                  resp.data?.toString() ?? "An unknown error occurred.",
+            );
+        }
+      }
+    } catch (e) {
+      // Handle unexpected exceptions
+      throw APIException(
+        type: APIErrorType.toast,
+        message: "An unexpected error occurred: ${e.toString()}",
       );
     }
   }

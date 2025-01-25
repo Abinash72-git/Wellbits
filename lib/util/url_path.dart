@@ -4,9 +4,10 @@ class UrlPath {
 
 class LoginUrl {
   const LoginUrl();
-  final String sendOTP = 'farmsSentOtp';
+  final String sendOTP = 'wellbit_SendOtp';
   final String otpVerify = 'farmsVerifyOtp';
-  final String createProfile = 'addUserProfile';
-  final String createMedicalProfile = 'wellbitsSetMedicalProfile';
+  final String createProfile = 'create_wellbits_Profile';
+  final String createMedicalProfile = 'create_Medical_Profile';
+  final String creteLifeStyleProfile = 'create_Lifestyle_Profile';
   final String userProfile = 'user_profile';
 }

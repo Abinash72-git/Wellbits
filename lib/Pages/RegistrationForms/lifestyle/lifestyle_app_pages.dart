@@ -1,18 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wellbits/Pages/RegistrationForms/lifestyle.dart';
-import 'package:wellbits/Pages/RegistrationForms/lifestyle_smoking.dart';
+import 'package:wellbits/Pages/RegistrationForms/lifestyle/lifestyle.dart';
+import 'package:wellbits/Pages/RegistrationForms/lifestyle/lifestyle_smoking.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/providers/user_provider.dart';
 import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/dilogs.dart';
 import 'package:wellbits/util/extension.dart';
 import 'package:wellbits/util/styles.dart';
+import 'package:wellbits/widgets/dilogue/dilogue.dart';
 
-import '../../util/color_constant.dart';
+import '../../../util/color_constant.dart';
 
 class LifestyleAppPages extends StatefulWidget {
   const LifestyleAppPages({super.key});
@@ -43,6 +46,7 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
 
   int lifestyleScore = 0;
   int totalScore = 0;
+  UserProvider get provider => context.read<UserProvider>();
 
   @override
   void initState() {
@@ -116,57 +120,86 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
   }
 
   // Method to proceed to the next step
-  void nextStep() {
+  void nextStep() async {
+    // First, validate the current step before proceeding
     if (!validateCurrentStep(currentStep)) return;
+
+    // Validate Step 1: Ensure all activities are answered
     if (currentStep == 1 && !areAllActivitiesAnswered()) {
       Dialogs.snackbar(
           "Please answer all activities before proceeding.", context);
       return;
     }
+
+    // Validate Step 2: Ensure smoking and drinking questions are answered
     if (currentStep == 2 && !areSmokingAndDrinkingAnswered()) {
       Dialogs.snackbar(
           "Please answer both smoking and drinking questions before proceeding.",
           context);
       return;
     }
-    if (currentStep == 1) {
-      print("Walking: $isWalking");
-      print("Workout: $isWorkout");
-      print("Cycling: $isCycling");
-      print("Swimming: $isSwimming");
-      print("Sports: $isSports");
 
-      // Calculate and display the score for Step 1
-
-      // Dialogs.snackbar(
-      //     "Step 1 complete. Your current score: $lifestyleScore", context);
-    }
-
-    // Handle Step 2: Smoking and Drinking
+    // When we reach Step 2, we call the API to create the lifestyle profile
     if (currentStep == 2) {
-      print("Smoking: $isSmoking");
-      print("Drinking: $isDrinking");
+      // Set loading state to true to indicate the request is being made
+      setState(() {
+        isLoading = true;
+      });
 
-      // Update the score for Step 2
+      try {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String? savedToken = prefs.getString(AppConstants.token);
+        print("Token from SharedPreferences: $savedToken");
 
-      // Dialogs.snackbar("Step 2 complete. Total score: $totalScore", context);
-    }
+        await AppDialogue.openLoadingDialogAfterClose(context,
+            text: "Creating LifeStle", load: () async {
+          final response = await provider.createLifestyleProfile(
+            token: savedToken, // Pass the user's token here
+            walking: isWalking?.toString() ?? "false",
+            workout: isWorkout?.toString() ?? "false",
+            cycling: isCycling?.toString() ?? "false",
+            swimming: isSwimming?.toString() ?? "false",
+            sports: isSports?.toString() ?? "false",
+            smoking: isSmoking?.toString() ?? "false",
+            drinking: isDrinking?.toString() ?? "false",
+          );
 
-    setState(() {
-      if (currentStep < 2) {
-        currentStep++;
-      } else {
-        // Navigate to the new page after the last step is completed
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RegisterAppPages(
-              tabNumber: 3,
-            ),
-          ), // Replace with your new page widget
-        );
+          // Check if the response is successful and navigate to the next page
+          if (response.status) {
+            // Assuming the response contains a score or some other data
+            print("Lifestyle Profile Created Successfully!");
+
+            // Navigate to RegisterAppPages after the API call
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterAppPages(
+                  tabNumber: 3,
+                ),
+              ),
+            );
+          }
+        });
+
+        // Call the createLifestyleProfile method with user data
+        // final response =
+      } catch (e) {
+        // Handle any errors that occurred during the API call
+        Dialogs.snackbar("An error occurred: ${e.toString()}", context);
+      } finally {
+        // Set loading state back to false once the request completes
+        setState(() {
+          isLoading = false;
+        });
       }
-    });
+    } else {
+      // Proceed to next step if currentStep is not 2
+      setState(() {
+        if (currentStep < 2) {
+          currentStep++;
+        }
+      });
+    }
   }
 
   void goToStep(int step) {

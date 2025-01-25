@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatingstyle.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatingstyle.dart';
 import 'package:wellbits/Pages/RegistrationForms/workstyle.dart';
 import 'package:wellbits/Pages/intro_page.dart';
-import 'package:wellbits/Pages/RegistrationForms/lifestyle_app_pages.dart';
-import 'package:wellbits/Pages/RegistrationForms/medical_app_pages.dart';
+import 'package:wellbits/Pages/RegistrationForms/lifestyle/lifestyle_app_pages.dart';
+import 'package:wellbits/Pages/RegistrationForms/medicalstyle/medical_app_pages.dart';
 import 'package:wellbits/Pages/RegistrationForms/profile.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';

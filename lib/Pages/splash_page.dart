@@ -42,7 +42,8 @@ class _SplashState extends State<Splash> {
         context,
       );
     } else {
-      AppRouteName.login.pushAndRemoveUntil(context, (route) => false);
+      AppRouteName.registerAppPages
+          .pushAndRemoveUntil(context, (route) => false);
     }
   }
 

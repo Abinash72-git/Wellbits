@@ -280,37 +280,49 @@ class _LoginState extends State<Login> {
                     buttonwidth: screenWidth,
                     radius: 40,
                     onTap: () async {
+                      print(
+                          "-----------------Login Button Clicked----------------");
                       if (formKey.currentState!.validate()) {
                         // isLoading ? null : login();
                         FocusScope.of(context).unfocus();
-                        try {
-                          await AppDialogue.openLoadingDialogAfterClose(
-                            context,
-                            text: "Loading...",
-                            load: () async {
-                              return await provider.sendOTP(
-                                  mobile: mobile.text);
-                            },
-                            afterComplete: (resp) async {
-                              if (resp.status) {
-                                print("sucess");
-                                SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
-                                await prefs.setString(
-                                    AppConstants.USERMOBILE, mobile.text);
-                                AppDialogue.toast(resp.data);
-                                AppRouteName.otp.push(
-                                  context,
-                                );
-                              }
-                            },
-                          );
-                        } on Exception catch (e) {
-                          ExceptionHandler.showMessage(context, e);
-                        }
+
+                        await AppDialogue.openLoadingDialogAfterClose(
+                          context,
+                          text: "Loading...",
+                          load: () async {
+                            return await provider.sendOTP(mobile: mobile.text);
+                          },
+                          afterComplete: (resp) async {
+                            if (resp.status) {
+                              print("sucess");
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setString(
+                                  AppConstants.USERMOBILE, mobile.text);
+                              AppDialogue.toast(resp.data);
+                              AppRouteName.otp.push(
+                                context,
+                              );
+                            }
+                          },
+                        );
                       }
                     },
                   ),
+                  // GestureDetector(
+                  //   onTap: () async {
+                  //     await provider.sendOTP(mobile: mobile.text);
+                  //   },
+                  //   child: Container(
+                  //     height: 50,
+                  //     width: 200,
+                  //     color: AppColor.fillColor,
+                  //     child: Text(
+                  //       "Next",
+                  //       style: Styles.textStyleExtraLarge(context),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

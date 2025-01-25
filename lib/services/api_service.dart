@@ -266,7 +266,7 @@ class APIService {
       // throw InternetException(type: InternetAvailabilityType.NoInternet);
     } on FormatException {
       throw APIException(type: APIErrorType.other);
-    }on TimeoutException {
+    } on TimeoutException {
       rethrow;
     } on APIException catch (e) {
       if (forceLogout && e.type == APIErrorType.auth) {

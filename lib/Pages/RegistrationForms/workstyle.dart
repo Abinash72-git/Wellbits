@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:wellbits/Pages/RegistrationForms/eatingstyle.dart';
+import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatingstyle.dart';
 import 'package:wellbits/Pages/app_pages.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
@@ -166,30 +166,30 @@ class _WorkstyleState extends State<Workstyle> {
               const SizedBox(
                 height: 20,
               ),
-              Text(
-                "Secondary Work",
-                style: Styles.textStyleExtraLarge(
-                  context,
-                  color: AppColor.mainTextColor,
-                ),
-              ),
-              const SizedBox(height: 8),
-              createDropdownField(
-                context,
-                label: "Select Work",
-                iconPath:
-                    "assets/icons/secondary work.png", // Example icon path
-                value: selectedWorkType,
-                items: workTypes,
-                onChanged: (value) {
-                  setState(() {
-                    selectedWorkType = value;
-                  });
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              // Text(
+              //   "Secondary Work",
+              //   style: Styles.textStyleExtraLarge(
+              //     context,
+              //     color: AppColor.mainTextColor,
+              //   ),
+              // ),
+              // const SizedBox(height: 8),
+              // createDropdownField(
+              //   context,
+              //   label: "Select Work",
+              //   iconPath:
+              //       "assets/icons/secondary work.png", // Example icon path
+              //   value: selectedWorkType,
+              //   items: workTypes,
+              //   onChanged: (value) {
+              //     setState(() {
+              //       selectedWorkType = value;
+              //     });
+              //   },
+              // ),
+              // const SizedBox(
+              //   height: 20,
+              // ),
               Text(
                 "On Desk Time",
                 style: Styles.textStyleExtraLarge(

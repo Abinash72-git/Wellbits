@@ -271,62 +271,71 @@ class _OtpState extends State<Otp> {
                     height: height / 20,
                   ),
                   MyButton(
-                      text: isLoading ? 'Loading...' : "next".toUpperCase(),
-                      textcolor: AppColor.whiteColor,
-                      textsize: 23 * (screenWidth / 375),
-                      fontWeight: FontWeight.w600,
-                      letterspacing: 0.7,
-                      buttoncolor: AppColor.mainTextColor,
-                      borderColor: AppColor.mainTextColor,
-                      buttonheight: 65 * (screenHeight / 812),
-                      buttonwidth: screenWidth,
-                      radius: 40,
-                      onTap: () async {
-                        if (otp.text.length == 4) {
-                          FocusScope.of(context).unfocus();
-                          try {
-                            await AppDialogue.openLoadingDialogAfterClose(
-                              context,
-                              text: "Loading...",
-                              load: () async {
-                                return await provider.verifyOtpAndLogin(
-                                  mobile: mobile.text,
-                                  otp: otp.text,
-                                );
-                              },
-                              afterComplete: (resp) async {
-                                if (resp.status) {
-                                  print("Success");
-                                  BaseModel baseModel =
-                                      BaseModel.fromMap(resp.fullBody);
+                    text: isLoading ? 'Loading...' : "next".toUpperCase(),
+                    textcolor: AppColor.whiteColor,
+                    textsize: 23 * (screenWidth / 375),
+                    fontWeight: FontWeight.w600,
+                    letterspacing: 0.7,
+                    buttoncolor: AppColor.mainTextColor,
+                    borderColor: AppColor.mainTextColor,
+                    buttonheight: 65 * (screenHeight / 812),
+                    buttonwidth: screenWidth,
+                    radius: 40,
+                    // onTap: () async {
+                    //   if (otp.text.length == 4) {
+                    //     FocusScope.of(context).unfocus();
+                    //     try {
+                    //       await AppDialogue.openLoadingDialogAfterClose(
+                    //         context,
+                    //         text: "Loading...",
+                    //         load: () async {
+                    //           return await provider.verifyOtpAndLogin(
+                    //             mobile: mobile.text,
+                    //             otp: otp.text,
+                    //           );
+                    //         },
+                    //         afterComplete: (resp) async {
+                    //           if (resp.status) {
+                    //             print("Success");
+                    //             BaseModel baseModel =
+                    //                 BaseModel.fromMap(resp.fullBody);
 
-                                  if (baseModel.message ==
-                                      "Otp Verified successfully") {
-                                    // Navigate to homepage
-                                    await AppRouteName.appPages
-                                        .pushAndRemoveUntil(
-                                      context,
-                                      (route) => false,
-                                    );
-                                  } else if (baseModel.message ==
-                                      "Not registered") {
-                                    // Navigate to registration page
-                                    await AppRouteName.introSlider
-                                        .push(context);
-                                  } else {
-                                    AppDialogue.toast(
-                                        "Unexpected response: ${baseModel.message}");
-                                  }
-                                }
-                              },
-                            );
-                          } on Exception catch (e) {
-                            ExceptionHandler.showMessage(context, e);
-                          }
-                        } else {
-                          AppDialogue.toast("Please enter a valid 4-digit OTP");
-                        }
-                      }),
+                    //             if (baseModel.message ==
+                    //                 "Otp Verified successfully") {
+                    //               // Navigate to homepage
+                    //               await AppRouteName.appPages
+                    //                   .pushAndRemoveUntil(
+                    //                 context,
+                    //                 (route) => false,
+                    //               );
+                    //             } else if (baseModel.message ==
+                    //                 "Not registered") {
+                    //               // Navigate to registration page
+                    //               await AppRouteName.introSlider
+                    //                   .push(context);
+                    //             } else {
+                    //               AppDialogue.toast(
+                    //                   "Unexpected response: ${baseModel.message}");
+                    //             }
+                    //           }
+                    //         },
+                    //       );
+                    //     } on Exception catch (e) {
+                    //       ExceptionHandler.showMessage(context, e);
+                    //     }
+                    //   } else {
+                    //     AppDialogue.toast("Please enter a valid 4-digit OTP");
+                    //   }
+                    // }
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterAppPages(
+                                    tabNumber: 0,
+                                  )));
+                    },
+                  ),
                 ],
               ),
             ),

@@ -7,7 +7,7 @@ class AppConstants {
   //API URL Constants
   // static const String BASE_URL = 'https://new.dev-healthplanner.xyz/api/'; //Dev
   static const String BASE_URL =
-      'https://upgrade.test-healthplanner.xyz/api/'; //Prod
+      'https://tsitfilemanager.in/vignesh/wellbits/public/api/'; //Prod
 
   // static final String BASE_URL = AppConfig.instance.baseUrl;
 

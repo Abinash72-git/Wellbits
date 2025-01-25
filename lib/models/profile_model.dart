@@ -10,10 +10,11 @@ class ProfileModel {
   });
 
   factory ProfileModel.fromMap(Map<String, dynamic> json) {
+    print("ProfileModel JSON: $json");
     return ProfileModel(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      token: json['token'],
+      token: json['token'], // Ensure this matches the key from the backend
     );
   }
 }
