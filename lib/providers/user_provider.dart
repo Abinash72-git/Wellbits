@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -11,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellbits/enums/enum.dart';
 import 'package:wellbits/models/api_validation_model.dart';
+import 'package:wellbits/models/base_model.dart';
 import 'package:wellbits/models/lifestyle_model.dart';
 import 'package:wellbits/models/login_model.dart';
 import 'package:wellbits/models/medical_res_model.dart';
@@ -65,14 +67,14 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<APIResp> verifyOtpAndLogin({
+  Future<APIResp> verifyOTP({
     required String mobile,
     required String otp,
   }) async {
     final resp = await APIService.post(
       UrlPath.loginUrl.otpVerify,
       data: {
-        "phone": mobile.replaceAll(RegExp(r'[^0-9]'), ''),
+        "phone": mobile,
         "otp": otp,
       },
       showNoInternet: false,
@@ -83,19 +85,13 @@ class UserProvider extends ChangeNotifier {
     );
 
     print(resp.statusCode);
+    print("Response Status----------------------->");
     print(resp.status);
+    print("Response Data------------------>");
 
     if (resp.status) {
-      // Parse the response into LoginModel
-      LoginModel data = LoginModel.fromMap(resp.fullBody);
-
-      // If the token exists, save it locally and return
-      if (data.token != null && data.token!.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.token, data.token!);
-      }
-
-      return resp; // Return the API response
+      isApiValidationError = false;
+      return resp;
     } else if (!resp.status && resp.data == "Validation Error") {
       AppConstants.apiValidationModel =
           ApiValidationModel.fromJson(resp.fullBody);
@@ -104,9 +100,8 @@ class UserProvider extends ChangeNotifier {
       return resp;
     } else {
       throw APIException(
-        type: APIErrorType.toast,
-        message:
-            resp.data?.toString() ?? "Invalid credential. Please try again!",
+        type: APIErrorType.auth,
+        message: resp.data?.toString() ?? "Invalid OTP. Please try again!",
       );
     }
   }
@@ -168,63 +163,156 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<APIResp> createMedicalProfile({
-    required String? token,
-    required double height,
-    required double weight,
-    required double pressureSystolic,
-    required double pressureDiastolic,
-    required double triglycerides,
-    required double ldl,
-    required double hdl,
-    required double sugarPre,
-    required double sugarPost,
-  }) async {
-    print("Token from SharedPreferences: $token");
-    // Log the token for debugging
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String? savedToken = prefs.getString(AppConstants.token);
-    // print("Token from SharedPreferences: $savedToken");
-    // print("Token used in createMedicalProfile: $token");
+ Future<APIResp> createMedicalProfile({
+  required String? token,
+  required double height,
+  required double weight,
+  required double pressureSystolic,
+  required double pressureDiastolic,
+  required double triglycerides,
+  required double ldl,
+  required double hdl,
+  required double sugarPre,
+  required double sugarPost,
+}) async {
+  if (token == null || token.isEmpty) {
+    throw APIException(
+      type: APIErrorType.toast,
+      message: "Token is invalid.",
+    );
+  }
 
-    // Prepare the data payload for the request
+  print("Token from SharedPreferences: $token");
+
+  // Prepare the data payload for the request
+  final Map<String, dynamic> data = {
+    "height": height,
+    "weight": weight,
+    "pressure_systolic": pressureSystolic,
+    "pressure_diastolic": pressureDiastolic,
+    "triglycerides": triglycerides,
+    "ldl": ldl,
+    "hdl": hdl,
+    "sugar_pre": sugarPre,
+    "sugar_post": sugarPost,
+  };
+
+  final String url = '${UrlPath.loginUrl.createMedicalProfile}/$token';
+  print("API URL: $url");
+
+  try {
+  final APIResp response = await APIService.post(
+    url,
+    data: data,
+    showNoInternet: true, 
+    auth: true,
+    forceLogout: false,
+    console: true,
+    timeout: const Duration(seconds: 30),
+  );
+
+  print("API Response: ${response.fullBody}");
+
+  if (response.status) {
+    // Success response, continue with your flow
+    MedicalProfileResponse profile = MedicalProfileResponse.fromMap(response.fullBody);
+
+    // Proceed with your logic, including saving the score or other data
+
+    return response;
+  } else {
+    // Handling errors based on response status
+    throw APIException(
+      type: APIErrorType.toast,
+      message: response.data?.toString() ?? "An error occurred while processing.",
+    );
+  }
+} catch (e) {
+  // Handle unexpected exceptions
+  print("Unexpected error: $e");
+  throw APIException(
+    type: APIErrorType.toast,
+    message: "An unexpected error occurred: ${e.toString()}",
+  );
+}
+
+}
+
+// Function to handle API errors
+APIResp _handleApiError(APIResp response) {
+  switch (response.statusCode) {
+    case 404:
+      throw APIException(
+        type: APIErrorType.toast,
+        message: "User not found or token is invalid.",
+      );
+    case 409:
+      throw APIException(
+        type: APIErrorType.toast,
+        message: "Medical profile already exists for this user.",
+      );
+    case 422:
+      throw APIException(
+        type: APIErrorType.toast,
+        message: "Validation error: ${response.data?.toString()}",
+      );
+    case 500:
+      throw APIException(
+        type: APIErrorType.toast,
+        message: "Internal server error. Please try again later.",
+      );
+    default:
+      throw APIException(
+        type: APIErrorType.toast,
+        message: response.data?.toString() ?? "An unknown error occurred.",
+      );
+  }
+}
+
+  Future<APIResp> createLifestyleProfile({
+    required String? token, // Explicitly pass the token
+    required String walking,
+    required String workout,
+    required String cycling,
+    required String swimming,
+    required String sports,
+    required String smoking,
+    required String drinking,
+  }) async {
+    print("-----------------Create Lifestyle Profile Entry---------------");
+
     final Map<String, dynamic> data = {
-      "height": height,
-      "weight": weight,
-      "pressure_systolic": pressureSystolic,
-      "pressure_diastolic": pressureDiastolic,
-      "triglycerides": triglycerides,
-      "ldl": ldl,
-      "hdl": hdl,
-      "sugar_pre": sugarPre,
-      "sugar_post": sugarPost,
+      "walking": walking,
+      "workout": workout,
+      "cycling": cycling,
+      "swimming": swimming,
+      "sports": sports,
+      "smoking": smoking,
+      "drinking": drinking,
     };
 
-    final String url = '${UrlPath.loginUrl.createMedicalProfile}/$token';
+    final String url = '${UrlPath.loginUrl.creteLifeStyleProfile}/$token';
     print("API URL: $url");
-
     try {
-      // Make the POST request
-      final APIResp response = await APIService.post(
+      final response = await APIService.post(
         url,
         data: data,
-        showNoInternet: true, // Enable better handling for no internet
-        auth: true,
+        showNoInternet: false,
+        auth: true, // Ensure token is sent in the request headers
         forceLogout: false,
         console: true,
         timeout: const Duration(seconds: 30),
       );
 
-      if (response.status) {
-        // Parse and handle the success response
-        MedicalProfileResponse profile =
-            MedicalProfileResponse.fromMap(response.fullBody);
+      print("Response Status Code: ${response.statusCode}");
+      print("Response Status: ${response.status}");
 
-        // Save the total score locally if available
-        if (profile.totalScore != null) {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setInt(AppConstants.TotalScore, profile.totalScore!);
-        }
+      if (response.status) {
+        // Parse the response body using LifestyleModel
+        LifestyleModel lifestyle = LifestyleModel.fromMap(response.fullBody);
+
+        print("Lifestyle profile created successfully: ${lifestyle.message}");
+        print("Lifestyle score: ${lifestyle.lifestyleScore}");
 
         return response;
       } else {
@@ -238,7 +326,7 @@ class UserProvider extends ChangeNotifier {
           case 409:
             throw APIException(
               type: APIErrorType.toast,
-              message: "Medical profile already exists for this user.",
+              message: "LifeStyle profile already exists for this user.",
             );
           case 422:
             throw APIException(
@@ -253,8 +341,7 @@ class UserProvider extends ChangeNotifier {
           default:
             throw APIException(
               type: APIErrorType.toast,
-              message:
-                  response.data?.toString() ?? "An unknown error occurred.",
+              message: response.data?.toString() ?? "An unknown error occurred.",
             );
         }
       }
@@ -267,90 +354,57 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<APIResp> createLifestyleProfile({
-     required String? token, // Explicitly pass the token
-    required String walking,
-    required String workout,
-    required String cycling,
-    required String swimming,
-    required String sports,
-    required String smoking,
-    required String drinking,
-  }) async {
-    print("-----------------Create Lifestyle Profile Entry---------------");
+  Future<APIResp> createWorkStyleProfile({
+  required String? token,
+  required String workType,
+  required String workHours,
+  required double onDeskTime,
+  required double breakTime,
+}) async {
+  // API Request Body
+  final Map<String, dynamic> data = {
+    "work_type": workType,
+    "work_hours": workHours,
+    "on_desk_time": onDeskTime,
+    "break_time": breakTime,
+  };
 
-   
-    final Map<String, dynamic> data = {
-       "walking": walking,
-      "workout": workout,
-      "cycling": cycling,
-      "swimming": swimming,
-      "sports": sports,
-      "smoking": smoking,
-      "drinking": drinking,
-    };
+  // Perform POST request
+  final resp = await APIService.post(
+    'api/createWorkStyleProfile/$token', // API endpoint
+    data: data,
+    showNoInternet: false,
+    auth: true, // Authentication required
+    forceLogout: false,
+    console: true, // Logs for debugging
+    timeout: const Duration(seconds: 30),
+  );
 
-    final String url = '${UrlPath.loginUrl.creteLifeStyleProfile}/$token';
-    print("API URL: $url");
-    try {
-      final resp = await APIService.post(
-        url,
-        data: data,
-        showNoInternet: false,
-        auth: true, // Ensure token is sent in the request headers
-        forceLogout: false,
-        console: true,
-        timeout: const Duration(seconds: 30),
-      );
+  // Debugging logs
+  print("Status Code-----------------------> ${resp.statusCode}");
+  print("Response Status-------------------> ${resp.status}");
+  print("Response Data---------------------> ${resp.data}");
 
-      print("Response Status Code: ${resp.statusCode}");
-      print("Response Status: ${resp.status}");
-
-      if (resp.status) {
-        // Parse the response body using LifestyleModel
-        LifestyleModel lifestyle = LifestyleModel.fromMap(resp.fullBody);
-
-        print("Lifestyle profile created successfully: ${lifestyle.message}");
-        print("Lifestyle score: ${lifestyle.lifestyleScore}");
-
-        return resp;
-      } else {
-       // Map the errors to user-friendly messages based on the status code
-        switch (resp.statusCode) {
-          case 404:
-            throw APIException(
-              type: APIErrorType.toast,
-              message: "User not found or token is invalid.",
-            );
-          case 409:
-            throw APIException(
-              type: APIErrorType.toast,
-              message: "LifeStyle profile already exists for this user.",
-            );
-          case 422:
-            throw APIException(
-              type: APIErrorType.toast,
-              message: "Validation error: ${resp.data?.toString()}",
-            );
-          case 500:
-            throw APIException(
-              type: APIErrorType.toast,
-              message: "Internal server error. Please try again later.",
-            );
-          default:
-            throw APIException(
-              type: APIErrorType.toast,
-              message:
-                  resp.data?.toString() ?? "An unknown error occurred.",
-            );
-        }
-      }
-    } catch (e) {
-      // Handle unexpected exceptions
-      throw APIException(
-        type: APIErrorType.toast,
-        message: "An unexpected error occurred: ${e.toString()}",
-      );
-    }
+  // Handle API Response
+  if (resp.status) {
+    // Success
+    isApiValidationError = false;
+    notifyListeners(); // Notify listeners about any state change
+    return resp;
+  } else if (!resp.status && resp.data == "Validation Error") {
+    // Validation Error
+    AppConstants.apiValidationModel =
+        ApiValidationModel.fromJson(resp.fullBody);
+    isApiValidationError = true;
+    notifyListeners(); // Notify listeners about validation error
+    return resp;
+  } else {
+    // Other errors
+    throw APIException(
+      type: APIErrorType.toast,
+      message: resp.data?.toString() ?? "Unable to create workstyle profile. Please try again!",
+    );
   }
+}
+
 }

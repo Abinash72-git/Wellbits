@@ -19,7 +19,7 @@ class MedicalProfileResponse {
   final double? sugarPost;
   final String? sugarStatus;
   final int? sugarScore;
-  final int? totalScore;
+  final double? totalScore; // Change this to double
   final String? status;
 
   MedicalProfileResponse({
@@ -70,7 +70,7 @@ class MedicalProfileResponse {
       sugarPost: (json['sugar_post'] as num?)?.toDouble(),
       sugarStatus: json['sugar_status'] as String?,
       sugarScore: json['sugar_score'] as int?,
-      totalScore: json['total_score'] as int?,
+      totalScore: (json['total_score'] as num?)?.toDouble(), // Update this to double?
       status: json['status'] as String?,
     );
   }
@@ -98,7 +98,7 @@ class MedicalProfileResponse {
       'sugar_post': sugarPost,
       'sugar_status': sugarStatus,
       'sugar_score': sugarScore,
-      'total_score': totalScore,
+      'total_score': totalScore, // Keep this as double
       'status': status,
     };
   }

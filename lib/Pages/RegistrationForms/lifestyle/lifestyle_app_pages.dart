@@ -145,44 +145,22 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
       setState(() {
         isLoading = true;
       });
-
       try {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? savedToken = prefs.getString(AppConstants.token);
-        print("Token from SharedPreferences: $savedToken");
-
         await AppDialogue.openLoadingDialogAfterClose(context,
-            text: "Creating LifeStle", load: () async {
-          final response = await provider.createLifestyleProfile(
-            token: savedToken, // Pass the user's token here
-            walking: isWalking?.toString() ?? "false",
-            workout: isWorkout?.toString() ?? "false",
-            cycling: isCycling?.toString() ?? "false",
-            swimming: isSwimming?.toString() ?? "false",
-            sports: isSports?.toString() ?? "false",
-            smoking: isSmoking?.toString() ?? "false",
-            drinking: isDrinking?.toString() ?? "false",
+            text: "Creating Lifestyle", load: () async {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          final String? token = prefs.getString(AppConstants.token);
+          return await provider.createLifestyleProfile(
+            token: token,
+            walking: isWalking != null ? (isWalking! ? "yes" : "no") : "no",
+            workout: isWorkout != null ? (isWorkout! ? "yes" : "no") : "no",
+            cycling: isCycling != null ? (isCycling! ? "yes" : "no") : "no",
+            swimming: isSwimming != null ? (isSwimming! ? "yes" : "no") : "no",
+            sports: isSports != null ? (isSports! ? "yes" : "no") : "no",
+            smoking: isSmoking != null ? (isSmoking! ? "yes" : "no") : "no",
+            drinking: isDrinking != null ? (isDrinking! ? "yes" : "no") : "no",
           );
-
-          // Check if the response is successful and navigate to the next page
-          if (response.status) {
-            // Assuming the response contains a score or some other data
-            print("Lifestyle Profile Created Successfully!");
-
-            // Navigate to RegisterAppPages after the API call
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RegisterAppPages(
-                  tabNumber: 3,
-                ),
-              ),
-            );
-          }
         });
-
-        // Call the createLifestyleProfile method with user data
-        // final response =
       } catch (e) {
         // Handle any errors that occurred during the API call
         Dialogs.snackbar("An error occurred: ${e.toString()}", context);
@@ -192,6 +170,49 @@ class _LifestyleAppPagesState extends State<LifestyleAppPages> {
           isLoading = false;
         });
       }
+
+      // try {
+      //   await AppDialogue.openLoadingDialogAfterClose(context,
+      //       text: "Creating LifeStyle", load: () async {
+      //     SharedPreferences prefs = await SharedPreferences.getInstance();
+      //     String? savedToken = prefs.getString(AppConstants.token);
+      //     print("Token from SharedPreferences: $savedToken");
+      //     final response = await provider.createLifestyleProfile(
+      //       token: savedToken,
+      //       walking: isWalking != null ? (isWalking! ? "yes" : "no") : "no",
+      //       workout: isWorkout != null ? (isWorkout! ? "yes" : "no") : "no",
+      //       cycling: isCycling != null ? (isCycling! ? "yes" : "no") : "no",
+      //       swimming: isSwimming != null ? (isSwimming! ? "yes" : "no") : "no",
+      //       sports: isSports != null ? (isSports! ? "yes" : "no") : "no",
+      //       smoking: isSmoking != null ? (isSmoking! ? "yes" : "no") : "no",
+      //       drinking: isDrinking != null ? (isDrinking! ? "yes" : "no") : "no",
+      //     );
+
+      //     if (response.status) {
+      //       print("Lifestyle Profile Created Successfully!");
+      //       print("Navigating to RegisterAppPages...");
+      //       Navigator.pushReplacement(
+      //         context,
+      //         MaterialPageRoute(
+      //           builder: (context) => RegisterAppPages(
+      //             tabNumber: 3,
+      //           ),
+      //         ),
+      //       );
+      //     }
+      //   });
+
+      //   // Call the createLifestyleProfile method with user data
+      //   // final response =
+      // } catch (e) {
+      //   // Handle any errors that occurred during the API call
+      //   Dialogs.snackbar("An error occurred: ${e.toString()}", context);
+      // } finally {
+      //   // Set loading state back to false once the request completes
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      // }
     } else {
       // Proceed to next step if currentStep is not 2
       setState(() {

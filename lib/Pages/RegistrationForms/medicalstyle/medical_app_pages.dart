@@ -126,20 +126,14 @@ class _MedicalRegisterState extends State<MedicalRegister> {
 
   // Method to proceed to the next step
   void nextStep() async {
-    print("Current Step: $currentStep");
-
     if (currentStep == 1 && (!isHeightSelected || selectedHeight <= 0)) {
       Dialogs.snackbar("Please select your height before proceeding.", context);
-      print("Height validation failed");
       return;
     }
-
     if (currentStep == 2 && (selectedWeight <= 0 || !isWeightSelected)) {
       Dialogs.snackbar("Please select your weight before proceeding.", context);
-      print("Weight validation failed");
       return;
     }
-
     if (currentStep == 3 &&
         (!isPressureSelected ||
             systolicLevel <= 0 ||
@@ -147,20 +141,16 @@ class _MedicalRegisterState extends State<MedicalRegister> {
             cholesterolLevel <= 0)) {
       Dialogs.snackbar(
           "Please select your pressure and cholesterol levels.", context);
-      print("Pressure and cholesterol validation failed");
       return;
     }
-
     if (currentStep == 4 &&
         (!isSugarLevelSelected ||
             prePrandialLevel <= 0 ||
             postPrandialLevel <= 0)) {
       Dialogs.snackbar(
           "Please select your sugar levels before proceeding.", context);
-      print("Sugar levels validation failed");
       return;
     }
-
     if (currentStep == 5 &&
         (!isCholesterolSelected ||
             triglyceridesLevel <= 0 ||
@@ -169,44 +159,67 @@ class _MedicalRegisterState extends State<MedicalRegister> {
       Dialogs.snackbar(
           "Please complete your cholesterol levels before proceeding.",
           context);
-      print("Cholesterol validation failed");
       return;
     }
 
     if (currentStep == 5) {
-      FocusScope.of(context).unfocus();
+      FocusScope.of(context).unfocus(); // Close the keyboard
       setState(() {
         isLoading = true;
       });
 
       try {
-        // Simulate API call or process
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? savedToken = prefs.getString(AppConstants.token);
-        print("Token from SharedPreferences: $savedToken");
-        await AppDialogue.openLoadingDialogAfterClose(context,
-            text: "Creating Medical", load: () async {
-          return provider.createMedicalProfile(
-              token: savedToken,
-              height: selectedWeight,
-              weight: selectedHeight,
+        await AppDialogue.openLoadingDialogAfterClose(
+          context,
+          text: "Saving Medical Profile...",
+          load: () async {
+            final SharedPreferences prefs =
+                await SharedPreferences.getInstance();
+            final String? token = prefs.getString(AppConstants.token);
+
+            if (token == null) {
+              throw Exception("User token not found. Please log in again.");
+            }
+
+            // Call createMedicalProfile
+            return await provider.createMedicalProfile(
+              token: token,
+              height: selectedHeight,
+              weight: selectedWeight,
               pressureSystolic: systolicLevel,
               pressureDiastolic: diastolicLevel,
               triglycerides: triglyceridesLevel,
               ldl: ldlLevel,
               hdl: hdlLevel,
               sugarPre: prePrandialLevel,
-              sugarPost: postPrandialLevel);
-              
-        });
-        print("Medical profile creation simulated");
+              sugarPost: postPrandialLevel,
+            );
+          },
+          afterComplete: (resp) async {
+            try {
+              print("Response in afterComplete: ${resp.fullBody}");
 
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => RegisterAppPages(tabNumber: 2)));
+              // Check for success in the response
+              if (resp.fullBody['success'] == true) {
+                AppDialogue.toast("Medical profile created successfully!");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RegisterAppPages(tabNumber: 2),
+                  ),
+                );
+              } else {
+                AppDialogue.toast(
+                    "Failed to save medical profile: ${resp.fullBody['message'] ?? 'Unknown error'}");
+              }
+            } catch (e) {
+              print("Error in afterComplete: $e");
+              AppDialogue.toast("Something went wrong. Please try again.");
+            }
+          },
+        );
       } catch (e) {
-        print("Error during API call: $e");
+        ExceptionHandler.showMessage(context, e);
       } finally {
         setState(() {
           isLoading = false;
@@ -216,7 +229,6 @@ class _MedicalRegisterState extends State<MedicalRegister> {
       setState(() {
         currentStep++;
       });
-      print("Proceeding to next step: $currentStep");
     }
   }
 

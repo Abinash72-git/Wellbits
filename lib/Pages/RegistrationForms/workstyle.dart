@@ -1,10 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wellbits/Pages/RegistrationForms/eatingstyle/eatingstyle.dart';
 import 'package:wellbits/Pages/app_pages.dart';
 import 'package:wellbits/Pages/register_app_pages.dart';
 import 'package:wellbits/components/button.dart';
+import 'package:wellbits/providers/user_provider.dart';
+import 'package:wellbits/util/app_constant.dart';
 import 'package:wellbits/util/color_constant.dart';
 import 'package:wellbits/util/constant_image.dart';
 import 'package:wellbits/util/extension.dart';
@@ -26,7 +30,14 @@ class _WorkstyleState extends State<Workstyle> {
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   String? selectedWorkType;
+  String? selectedHours;
+  String? selectedDeskTime;
+  String? selectedBreakTime;
+
   final List<String> workTypes = ["Full-time", "Part-time", "No-work"];
+  final List<String> hours = ["12 hours", "8 hours"];
+  final List<String> desktime = ["1", "2", "3", "4", "5"];
+  final List<String> breaktime = ["1", "2", "3", "4", "5"];
   bool isLoading = false;
 
   @override
@@ -155,11 +166,11 @@ class _WorkstyleState extends State<Workstyle> {
                 context,
                 label: "Select Hours",
                 iconPath: "assets/icons/select hours.png", // Example icon path
-                value: selectedWorkType,
-                items: workTypes,
+                value: selectedHours,
+                items: hours,
                 onChanged: (value) {
                   setState(() {
-                    selectedWorkType = value;
+                    selectedHours = value;
                   });
                 },
               ),
@@ -202,11 +213,11 @@ class _WorkstyleState extends State<Workstyle> {
                 context,
                 label: "Select on desk time",
                 iconPath: "assets/icons/ondesk time.png", // Example icon path
-                value: selectedWorkType,
-                items: workTypes,
+                value: selectedDeskTime,
+                items: desktime,
                 onChanged: (value) {
                   setState(() {
-                    selectedWorkType = value;
+                    selectedDeskTime = value;
                   });
                 },
               ),
@@ -225,11 +236,11 @@ class _WorkstyleState extends State<Workstyle> {
                 context,
                 label: "Select break",
                 iconPath: "assets/icons/break.png", // Example icon path
-                value: selectedWorkType,
-                items: workTypes,
+                value: selectedBreakTime,
+                items: breaktime,
                 onChanged: (value) {
                   setState(() {
-                    selectedWorkType = value;
+                    selectedBreakTime = value;
                   });
                 },
               ),
@@ -257,12 +268,50 @@ class _WorkstyleState extends State<Workstyle> {
                 //   );
                 // },
                 onTap: () async {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => RegisterAppPages(
-                                tabNumber: 4,
-                              )));
+                  if (selectedWorkType != null) {
+                    final provider =
+                        Provider.of<UserProvider>(context, listen: false);
+                    try {
+                      SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      String? savedToken = prefs.getString(AppConstants.token);
+                      print("Token from SharedPreferences: $savedToken");
+                      final response = await provider.createWorkStyleProfile(
+                        token: savedToken,
+                        workType: selectedWorkType!,
+                        workHours: selectedHours!,
+                        onDeskTime: selectedDeskTime != null
+                            ? double.tryParse(selectedDeskTime!) ?? 0.0
+                            : 0.0,
+                        breakTime: selectedBreakTime != null
+                            ? double.tryParse(selectedBreakTime!) ?? 0.0
+                            : 0.0,
+                      );
+
+                      if (response.status) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Workstyle profile created successfully!')),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RegisterAppPages(tabNumber: 4),
+                          ),
+                        );
+                      }
+                    } catch (error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(error.toString())),
+                      );
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please select a work type.')),
+                    );
+                  }
                 },
               ),
               SizedBox(
